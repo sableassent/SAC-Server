@@ -51,7 +51,7 @@ const EthereumService = {
     setFees: async (obj) => {
         try {
             let response = await Server.request({
-                url: '/setFees',
+                url: '/fees',
                 method: 'POST',
                 data: obj || {}
             });
