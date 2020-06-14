@@ -4,8 +4,8 @@ const router = express.Router();
 const UserController = require('../controllers/user.controller');
 const EthereumController = require('../controllers/ethereum.controller');
 
-router.use('/transferEtherless', EthereumController.transferEtherless);
-router.use('/fees', EthereumController.getFees);
+router.post('/transferEtherless', EthereumController.transferEtherless);
+router.get('/fees', EthereumController.getFees);
 
 router.use(UserController.verifyToken);
 router.get('/isActivated', EthereumController.isActivated);
