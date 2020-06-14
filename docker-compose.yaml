@@ -33,15 +33,14 @@ services:
       - CHAIN=${CHAIN}
       - HARDFORK=${HARDFORK}
       - SAC1_ADDRESS=${SAC1_ADDRESS}
-    command: sh -c "node app.js"
     ports:
      - 3000:80
     networks:
       - main
 
-  controllerpanel:
-    build: controllerpanel
-    container_name: controllerpanel
+  controller:
+    build: controller
+    container_name: controller
     depends_on:
       - api
     environment:

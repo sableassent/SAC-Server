@@ -1,8 +1,11 @@
-FROM nginx:1.19.0
-COPY nginx.conf /etc/nginx/nginx.conf
-WORKDIR /usr/src/controllerpanel
+FROM node:12 as builder
+WORKDIR /usr/src/controller
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
 RUN npm run build
-COPY ./build/* /usr/share/nginx/html/
+
+FROM nginx:1.19.0
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /usr/src/controller/build/* /usr/share/nginx/html/
+CMD ["nginx"]
