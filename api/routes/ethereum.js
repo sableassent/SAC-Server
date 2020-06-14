@@ -6,14 +6,12 @@ const EthereumController = require('../controllers/ethereum.controller');
 
 router.post('/transferEtherless', EthereumController.transferEtherless);
 router.get('/fees', EthereumController.getFees);
-
-router.use(UserController.verifyToken);
-router.get('/isActivated', EthereumController.isActivated);
-router.post('/activate', EthereumController.activate);
-router.post('/search', EthereumController.search);
-router.post('/downloadAsCsv', EthereumController.downloadAsCsv);
-router.post('/transferOwnership', EthereumController.transferOwnership);
-router.post('/withdraw', EthereumController.withdraw);
-router.post('/fees', EthereumController.setFees);
+router.get('/isActivated', UserController.verifyToken, EthereumController.isActivated);
+router.post('/activate', UserController.verifyToken, EthereumController.activate);
+router.post('/search', UserController.verifyToken, EthereumController.search);
+router.post('/downloadAsCsv', UserController.verifyToken, EthereumController.downloadAsCsv);
+router.post('/transferOwnership', UserController.verifyToken, EthereumController.transferOwnership);
+router.post('/withdraw', UserController.verifyToken, EthereumController.withdraw);
+router.post('/fees', UserController.verifyToken, EthereumController.setFees);
 
 module.exports = router;

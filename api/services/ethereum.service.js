@@ -297,7 +297,7 @@ exports.setFees = async function (obj, user) {
 exports.getFees = async function () {
     let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');
-    return wallet.fees || 10;
+    return wallet.fees;
 }
 
 exports.prepareMatchByFilter = function (obj) {
