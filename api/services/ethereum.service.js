@@ -7,11 +7,11 @@ const Transaction = require('../models').Transaction;
 const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_ENDPOINT));
 
-exports.findByUserId = async function (userId) {
+exports.getWallet = async function () {
     let wallet = await Wallet.findOne({
         attributes: [
-            '_id', 'userId', 'balanceETH', 'balanceSAC', 'fees'
-        ], where: { userId: userId }
+            '_id', 'balanceETH', 'balanceSAC', 'fees'
+        ]
     });
     return wallet || null;
 }
@@ -29,7 +29,7 @@ exports.isActivated = async function (user) {
 exports.activate = async function (obj, user) {
     if (web3.eth.accounts.wallet['0']) return;
     if (!obj.secretKey) throw Error();
-    let wallet = await Wallet.findOne({ where: { userId: user._id } });
+    let wallet = await Wallet.findOne({});
     if (!wallet) throw Error();
     let decryptedPrivateKey = aes256.decrypt(obj.secretKey, wallet.privateKey);
     if (!decryptedPrivateKey) throw Error();
@@ -250,7 +250,7 @@ exports.transferOwnership = async function (obj) {
 exports.withdraw = async function (obj, user) {
     if (!obj.amount) throw Error('Amount is required.');
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
-    let wallet = await Wallet.findOne({ where: { userId: user._id } });
+    let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');
     let token = new web3.eth.Contract(JSON.parse(fs.readFileSync('./contracts/SAC1.abi')), process.env.SAC1_ADDRESS);
     token.defaultChain = process.env.CHAIN;
@@ -285,7 +285,7 @@ exports.withdraw = async function (obj, user) {
 exports.setFees = async function (obj, user) {
     if (!obj.fees) throw Error('Fees is required.');
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
-    let wallet = await Wallet.findOne({ where: { userId: user._id } });
+    let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');
     await Wallet.update({ fees: obj.fees }, {
         where: {

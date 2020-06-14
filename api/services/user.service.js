@@ -42,7 +42,7 @@ exports.login = async function (obj) {
         isActive: true,
     });
     user = await module.exports.findById(user._id);
-    let wallet = await EthereumService.findByUserId(user._id);
+    let wallet = await EthereumService.getWallet(user._id);
     return [accessToken, user, wallet];
 }
 

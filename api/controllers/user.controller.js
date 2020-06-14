@@ -36,7 +36,7 @@ exports.verifyToken = async function (req, res, next) {
 
 exports.me = async function (req, res, next) {
     try {
-        let wallet = await EthereumService.findByUserId(req.user._id);
+        let wallet = await EthereumService.getWallet();
         let contractBalanceSAC = await EthereumService.balanceOf(process.env.SAC1_ADDRESS);
         let totalTransaction = await EthereumService.findAndCountAllTransaction({});
         const todayStartDate = new Date().setHours(0, 0, 0);

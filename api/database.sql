@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS `AccessToken` (
 
 CREATE TABLE IF NOT EXISTS `Wallet` (
   `_id` varchar(256) NOT NULL,
-  `userId` varchar(256) NOT NULL,
   `privateKey` varchar(256) NOT NULL,
   `balanceETH` DOUBLE NULL,
   `balanceSAC` DOUBLE NULL,
