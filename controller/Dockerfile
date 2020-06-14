@@ -1,7 +1,7 @@
 FROM node:12 as builder
 WORKDIR /usr/src/controller
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm i
 COPY . .
 RUN npm run build
 
