@@ -1,3 +1,6 @@
+CREATE DATABASE sablecoin;
+USE sablecoin;
+
 CREATE TABLE IF NOT EXISTS `User` (
   `_id` varchar(256) NOT NULL,
   `name` varchar(256) NOT NULL,
