@@ -1,0 +1,53 @@
+version: '2'
+
+networks:
+  main:
+
+services:
+
+  mysql:
+    image: mysql:5.7.30
+    container_name: mysql
+    volumes:
+      - /opt/mysql-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=itsecure
+    ports:
+      - 3307:3306
+    networks:
+      - main
+
+  api:
+    build: api
+    container_name: api
+    depends_on:
+      - mysql
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=sablecoin
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=itsecure
+      - PASSWORD_SALT=k4Ms9fM2
+      - CHAIN=${CHAIN}
+      - HARDFORK=${HARDFORK}
+      - SAC1_ADDRESS=${SAC1_ADDRESS}
+    command: sh -c "node app.js"
+    ports:
+     - 3000:80
+    networks:
+      - main
+
+  controllerpanel:
+    build: controllerpanel
+    container_name: controllerpanel
+    depends_on:
+      - api
+    environment:
+      - REACT_APP_BASE_URL=https://api.sablecoin.co
+    command: nginx
+    ports:
+     - 3001:80
+    networks:
+      - main
