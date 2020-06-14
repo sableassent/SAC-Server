@@ -40,12 +40,13 @@ services:
       - main
 
   controller:
-    build: controller
+    build:
+      context: controller
+      args:
+        - REACT_APP_BASE_URL=${REACT_APP_BASE_URL}
     container_name: controller
     depends_on:
       - api
-    environment:
-      - REACT_APP_BASE_URL=${REACT_APP_BASE_URL}
     command: nginx
     ports:
      - 3001:80
