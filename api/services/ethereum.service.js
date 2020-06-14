@@ -5,7 +5,7 @@ const aes256 = require('aes256');
 const Wallet = require('../models').Wallet;
 const Transaction = require('../models').Transaction;
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_URL + '/' + process.env.INFURA_PROJECT_ID));
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_ENDPOINT));
 
 exports.findByUserId = async function (userId) {
     let wallet = await Wallet.findOne({
