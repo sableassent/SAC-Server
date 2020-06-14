@@ -87,3 +87,12 @@ exports.getFees = async function (req, res, next) {
         return res.status(500).send(e.message);
     }
 }
+
+exports.getNonce = async function (req, res, next) {
+    try {
+        let nonce = await EthereumService.getNonce(req.query.sender);
+        return res.status(200).send(nonce + "");
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}

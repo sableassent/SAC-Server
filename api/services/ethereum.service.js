@@ -300,6 +300,14 @@ exports.getFees = async function () {
     return wallet.fees;
 }
 
+exports.getNonce = async function (sender) {
+    let token = new web3.eth.Contract(JSON.parse(fs.readFileSync('./contracts/SAC1.abi')), process.env.SAC1_ADDRESS);
+    token.defaultChain = process.env.CHAIN;
+    token.defaultHardfork = process.env.HARDFORK;
+    let nonce = await token.methods.nonces(sender).call();
+    return nonce;
+}
+
 exports.prepareMatchByFilter = function (obj) {
     let match = {};
     if (obj.hasOwnProperty('address') && obj.address) {
