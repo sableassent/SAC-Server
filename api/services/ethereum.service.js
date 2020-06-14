@@ -128,7 +128,7 @@ exports.transferEtherless = async (obj, user) => {
     let requiredBalance = new web3.utils.BN(obj.amount).add(new web3.utils.BN(obj.fees));
     let balance = await token.methods.balanceOf(obj.sender).call();
     balance = new web3.utils.BN(balance);
-    if (balance.lt(requiredBalance)) throw ('Insufficient balance.');
+    if (balance.lt(requiredBalance)) throw Error('Insufficient balance.');
     let amountInFloat = new web3.utils.BN(obj.amount).div(new web3.utils.BN('10000000000000000')).toNumber() / 100;
     let txHash = await new Promise((resolve, reject) => {
         let resolved = false;
