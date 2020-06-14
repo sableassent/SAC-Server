@@ -3,4 +3,3 @@ WORKDIR /usr/src/api
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
-CMD ["sh", "-c", "node app.js"]
