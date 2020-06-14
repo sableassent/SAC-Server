@@ -82,7 +82,7 @@ exports.setFees = async function (req, res, next) {
 exports.getFees = async function (req, res, next) {
     try {
         let fees = await EthereumService.getFees();
-        return res.status(200).send(fees);
+        return res.status(200).send(fees + "");
     } catch (e) {
         return res.status(500).send(e.message);
     }
