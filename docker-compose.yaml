@@ -33,6 +33,7 @@ services:
       - CHAIN=${CHAIN}
       - HARDFORK=${HARDFORK}
       - SAC1_ADDRESS=${SAC1_ADDRESS}
+      - INFURA_API_ENDPOINT=${INFURA_API_ENDPOINT}
     command: sh -c "node app.js"
     ports:
      - 3000:80
