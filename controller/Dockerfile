@@ -1,4 +1,5 @@
 FROM node:12 as builder
+ARG REACT_APP_BASE_URL
 WORKDIR /usr/src/controller
 COPY package*.json ./
 RUN npm i
