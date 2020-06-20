@@ -192,7 +192,15 @@ exports.getTransaction = async (txHash) => {
     if (!transaction) throw Error('Transaction ' + txHash + ' not found.');
     delete transaction.updatedAt;
     delete transaction.createdAt;
-    return transaction;
+    return {
+        _id: transaction._id,
+        from: transaction.from,
+        to: transaction.to,
+        amount: transaction.amount,
+        fees: transaction.fees,
+        nonce: transaction.nonce,
+        status: transaction.status
+    };
 }
 
 exports.search = async (obj, page, limit, user) => {
