@@ -197,7 +197,7 @@ exports.getTransaction = async (txHash) => {
         from: transaction.from,
         to: transaction.to,
         amount: transaction.amount,
-        fees: transaction.fees,
+        fees: transaction.fees + '000000000000000000',
         nonce: transaction.nonce,
         status: transaction.status
     };
