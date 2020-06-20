@@ -5,7 +5,7 @@ const UserController = require('../controllers/user.controller');
 const EthereumController = require('../controllers/ethereum.controller');
 
 router.post('/transferEtherless', EthereumController.transferEtherless);
-router.get('/tx/:_id/status', EthereumController.getTransactionStatus);
+router.get('/tx/:_id', EthereumController.getTransaction);
 router.get('/fees', EthereumController.getFees);
 router.get('/nonce', EthereumController.getNonce);
 router.get('/isActivated', UserController.verifyToken, EthereumController.isActivated);

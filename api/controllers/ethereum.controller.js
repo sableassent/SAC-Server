@@ -27,10 +27,10 @@ exports.transferEtherless = async function (req, res, next) {
     }
 }
 
-exports.getTransactionStatus = async function (req, res, next) {
+exports.getTransaction = async function (req, res, next) {
     try {
-        let status = await EthereumService.getTransactionStatus(req.params._id);
-        return res.status(200).send(status);
+        let transaction = await EthereumService.getTransaction(req.params._id);
+        return res.status(200).json(transaction);
     } catch (e) {
         return res.status(500).send(e.message);
     }
