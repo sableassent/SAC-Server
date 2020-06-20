@@ -27,6 +27,15 @@ exports.transferEtherless = async function (req, res, next) {
     }
 }
 
+exports.getTransactionStatus = async function (req, res, next) {
+    try {
+        let status = await EthereumService.getTransactionStatus(req.params._id);
+        return res.status(200).send(status);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
 exports.search = async function (req, res, next) {
     try {
         let page = parseInt(req.body.page) || 0;

@@ -187,6 +187,12 @@ exports.transferEtherless = async (obj, user) => {
     return txHash;
 }
 
+exports.getTransactionStatus = async (txHash) => {
+    let transaction = await Transaction.findOne({ where: { _id: txHash } });
+    if (!transaction) throw Error('Transaction ' + txHash + ' not found.');
+    return transaction.status;
+}
+
 exports.search = async (obj, page, limit, user) => {
     let match = module.exports.prepareMatchByFilter(obj);
     page = page > 1 ? page - 1 : 0;
