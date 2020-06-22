@@ -35,6 +35,7 @@ services:
       - SAC1_ADDRESS=${SAC1_ADDRESS}
       - INFURA_API_ENDPOINT=${INFURA_API_ENDPOINT}
     command: sh -c "node app.js"
+    restart: always
     ports:
      - 3000:80
     networks:
@@ -49,6 +50,7 @@ services:
     depends_on:
       - api
     command: nginx
+    restart: always
     ports:
      - 3001:80
     networks:
