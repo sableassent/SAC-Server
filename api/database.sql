@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS `Wallet` (
   `privateKey` varchar(256) NOT NULL,
   `balanceETH` DOUBLE NULL,
   `balanceSAC` DOUBLE NULL,
-  `fees` INTEGER NULL,
+  `fixedFees` DOUBLE NULL,
+  `percentFees` DOUBLE NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
@@ -31,7 +32,8 @@ CREATE TABLE IF NOT EXISTS `Transaction` (
   `to` varchar(256) NOT NULL,
   `amount` varchar(256) NULL,
   `amountInFloat` DOUBLE NULL,
-  `fees` DOUBLE NULL,
+  `fees` varchar(256) NULL,
+  `feesInFloat` DOUBLE NULL,
   `nonce` INTEGER NULL,
   `status` varchar(256) NOT NULL,
   `updatedAt` TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),

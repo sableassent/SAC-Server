@@ -88,10 +88,19 @@ exports.setFees = async function (req, res, next) {
     }
 }
 
-exports.getFees = async function (req, res, next) {
+exports.getTotalFees = async function (req, res, next) {
     try {
-        let fees = await EthereumService.getFees();
-        return res.status(200).send(fees + "");
+        let fees = await EthereumService.getTotalFees(req.query.amount);
+        return res.status(200).send(fees);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.getSeparateFees = async function (req, res, next) {
+    try {
+        let fees = await EthereumService.getSeparateFees();
+        return res.status(200).json(fees);
     } catch (e) {
         return res.status(500).send(e.message);
     }

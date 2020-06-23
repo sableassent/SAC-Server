@@ -37,7 +37,8 @@ class Dashboard extends Component {
       secretKey: '',
       address: '',
       amount: '',
-      fees: '',
+      fixedFees: '',
+      percentFees: '',
       counts: {
         balanceETH: 0,
         balanceSAC: 0,
@@ -75,7 +76,8 @@ class Dashboard extends Component {
           balanceSAC: response.wallet.balanceSAC,
           contractBalanceSAC: response.contractBalanceSAC,
           totalTransaction: response.totalTransaction,
-          currentFees: response.wallet.fees
+          fixedFees: response.wallet.fixedFees,
+          percentFees: response.wallet.percentFees
         }
       })
     } catch (error) { }
@@ -151,9 +153,9 @@ class Dashboard extends Component {
   async setFees() {
     try {
       this.setState({ setFeesLoader: true });
-      let response = await EthereumService.setFees({ fees: this.state.fees });
+      let response = await EthereumService.setFees({ fixedFees: this.state.fixedFees, percentFees: this.state.percentFees });
       this.setState({ setFeesLoader: false });
-      this.setState({ fees: '' });
+      this.setState({ fixedFees: '', percentFees: '' });
       this.notificationSystem.addNotification({
         message: response,
         level: 'success',
@@ -203,10 +205,18 @@ class Dashboard extends Component {
             </Card>
           </Col>
           <Col xs="12" sm="4" lg="4">
+            <Card className="text-white bg-primary">
+              <CardBody>
+                <h2>{(this.state.walletActivated ? this.state.counts.fixedFees : 0)}</h2>
+                <div>Fixed Fees</div>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col xs="12" sm="4" lg="4">
             <Card className="text-white bg-dark">
               <CardBody>
-                <h2>{(this.state.walletActivated ? this.state.counts.currentFees : 0)}</h2>
-                <div>Current Fees</div>
+                <h2>{(this.state.walletActivated ? this.state.counts.percentFees : 0)} %</h2>
+                <div>Percent Fees</div>
               </CardBody>
             </Card>
           </Col>
@@ -220,7 +230,7 @@ class Dashboard extends Component {
           </Col>
         </Row>
         <Row>
-          <Col xs="12" md="4">
+          <Col xs="12" md="6">
             <Card>
               <Form action="" method="post" className="form-horizontal" onSubmit={(event) => { event.preventDefault(); this.activateWallet() }}>
                 <CardHeader>
@@ -253,7 +263,7 @@ class Dashboard extends Component {
               </Form>
             </Card>
           </Col>
-          <Col xs="12" md="4">
+          <Col xs="12" md="6">
             <Card>
               <Form action="" method="post" className="form-horizontal" onSubmit={(event) => { event.preventDefault(); this.transferOwnership() }}>
                 <CardHeader>
@@ -286,7 +296,7 @@ class Dashboard extends Component {
               </Form>
             </Card>
           </Col>
-          <Col xs="12" md="4">
+          <Col xs="12" md="6">
             <Card>
               <Form action="" method="post" className="form-horizontal" onSubmit={(event) => { event.preventDefault(); this.withdraw() }}>
                 <CardHeader>
@@ -319,9 +329,7 @@ class Dashboard extends Component {
               </Form>
             </Card>
           </Col>
-        </Row>
-        <Row>
-          <Col xs="12" md="4">
+          <Col xs="12" md="6">
             <Card>
               <Form action="" method="post" className="form-horizontal" onSubmit={(event) => { event.preventDefault(); this.setFees() }}>
                 <CardHeader>
@@ -329,14 +337,24 @@ class Dashboard extends Component {
                 </CardHeader>
                 <CardBody>
                   <FormGroup row>
-                    <Col md="12">
+                    <Col md="6">
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="fa fa-user"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="text" id="fees" name="fees" value={this.state.fees} onChange={(event) => { event.persist(); this.setState({ fees: event.target.value }) }} placeholder="Enter fees" />
+                        <Input type="text" id="fixedFees" name="fixedFees" value={this.state.fixedFees} onChange={(event) => { event.persist(); this.setState({ fixedFees: event.target.value }) }} placeholder="Enter fixed fees" />
+                      </InputGroup>
+                    </Col>
+                    <Col md="6">
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="fa fa-user"></i>
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input type="text" id="percentFees" name="percentFees" value={this.state.percentFees} onChange={(event) => { event.persist(); this.setState({ percentFees: event.target.value }) }} placeholder="Enter percent fees" />
                       </InputGroup>
                     </Col>
                   </FormGroup>

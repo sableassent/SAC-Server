@@ -10,7 +10,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_END
 exports.getWallet = async function () {
     let wallet = await Wallet.findOne({
         attributes: [
-            '_id', 'balanceETH', 'balanceSAC', 'fees'
+            '_id', 'balanceETH', 'balanceSAC', 'fixedFees', 'percentFees'
         ]
     });
     return wallet || null;
@@ -119,9 +119,8 @@ exports.transferEtherless = async (obj, user) => {
     let token = new web3.eth.Contract(JSON.parse(fs.readFileSync('./contracts/SAC1.abi')), process.env.SAC1_ADDRESS);
     token.defaultChain = process.env.CHAIN;
     token.defaultHardfork = process.env.HARDFORK;
-    let fees = wallet.fees || 10;
-    let feesBigInt = new web3.utils.BN(fees + '000000000000000000').toString();
-    if (!new web3.utils.BN(feesBigInt).eq(new web3.utils.BN(obj.fees))) throw Error('Incorrect fees.');
+    let fees = await module.exports.getTotalFees(obj.amount);
+    if (fees != obj.fees) throw Error('Incorrect fees.');
     let nonce = await token.methods.nonces(obj.sender).call();
     nonce = new web3.utils.BN(nonce);
     if (!nonce.eq(new web3.utils.BN(obj.nonce))) throw Error('Incorrect nonce.');
@@ -130,6 +129,7 @@ exports.transferEtherless = async (obj, user) => {
     balance = new web3.utils.BN(balance);
     if (balance.lt(requiredBalance)) throw Error('Insufficient balance.');
     let amountInFloat = new web3.utils.BN(obj.amount).div(new web3.utils.BN('10000000000000000')).toNumber() / 100;
+    let feesInFloat = new web3.utils.BN(obj.fees).div(new web3.utils.BN('10000000000000000')).toNumber() / 100;
     let txHash = await new Promise((resolve, reject) => {
         let resolved = false;
         token.methods.transferEtherless(obj.sender, obj.receipient, obj.amount, obj.fees, obj.nonce, obj.time, obj.signature).send({
@@ -177,7 +177,8 @@ exports.transferEtherless = async (obj, user) => {
             to: obj.receipient.toLowerCase(),
             amount: obj.amount,
             amountInFloat: amountInFloat,
-            fees: fees,
+            fees: obj.fees,
+            feesInFloat: feesInFloat,
             nonce: nonce,
             status: 'Pending',
             updatedAt: new Date(),
@@ -299,21 +300,33 @@ exports.withdraw = async function (obj, user) {
 }
 
 exports.setFees = async function (obj, user) {
-    if (!obj.fees) throw Error('Fees is required.');
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
     let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');
-    await Wallet.update({ fees: obj.fees }, {
-        where: {
-            _id: wallet._id
+    await Wallet.update(
+        {
+            fixedFees: obj.fixedFees,
+            percentFees: obj.percentFees
+        },
+        {
+            where: {
+                _id: wallet._id
+            }
         }
-    });
+    );
 }
 
-exports.getFees = async function () {
+exports.getSeparateFees = async function () {
     let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');
-    return wallet.fees;
+    return { fixed: wallet.fixedFees, percent: wallet.percentFees };
+}
+
+exports.getTotalFees = async function (amount) {
+    let fees = await module.exports.getSeparateFees();
+    let totalFees = new web3.utils.BN(Math.round(fees.fixed * 1000000) + '000000000000');
+    totalFees.add(new web3.utils.BN(amount).mul(new web3.utils.BN(Math.round(fees.percent * 100))).div(new web3.utils.BN(10000)));
+    return totalFees.toString(10);
 }
 
 exports.getNonce = async function (sender) {

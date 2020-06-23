@@ -22,7 +22,11 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: true
         },
         fees: {
-            type: DataTypes.INTEGER.UNSIGNED.ZEROFILL,
+            type: DataTypes.STRING(256),
+            allowNull: true
+        },
+        feesInFloat: {
+            type: DataTypes.DOUBLE,
             allowNull: true
         },
         nonce: {

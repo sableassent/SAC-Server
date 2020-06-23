@@ -269,7 +269,7 @@ class History extends Component {
                               <td>{transaction.from}</td>
                               <td>{transaction.to}</td>
                               <td>{transaction.amountInFloat + ' SAC'}</td>
-                              <td>{transaction.fees + ' SAC'}</td>
+                              <td>{transaction.feesInFloat + ' SAC'}</td>
                               <td>{transaction.nonce}</td>
                               <td>{moment(transaction.createdAt).format('MM/DD/YY hh:mm:ss')}</td>
                               <td>

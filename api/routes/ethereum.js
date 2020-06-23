@@ -6,7 +6,8 @@ const EthereumController = require('../controllers/ethereum.controller');
 
 router.post('/transferEtherless', EthereumController.transferEtherless);
 router.get('/tx/:_id', EthereumController.getTransaction);
-router.get('/fees', EthereumController.getFees);
+router.get('/fees', EthereumController.getTotalFees);
+router.get('/separateFees', EthereumController.getSeparateFees);
 router.get('/nonce', EthereumController.getNonce);
 router.get('/isActivated', UserController.verifyToken, EthereumController.isActivated);
 router.post('/activate', UserController.verifyToken, EthereumController.activate);

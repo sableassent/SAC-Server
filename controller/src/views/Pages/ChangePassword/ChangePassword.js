@@ -49,10 +49,9 @@ const Basic = () => {
                         setSpinner(false);
                         history.replace('/dashboard');
                     } catch (e) {
-                        console.log(e);
                         setSpinner(false)
                         setShowError(true);
-                        setMessage("Error");
+                        setMessage(e.message);
                     }
                 }}
             >

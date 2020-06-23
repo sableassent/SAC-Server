@@ -18,7 +18,7 @@ exports.findByAccessToken = async function (token) {
     let accessToken = await AccessToken.findOne({ where: { _id: token } });
     if (!accessToken) throw Error('Invalid access token.');
     if (!accessToken.isActive) throw Error('Access token expired.');
-    let user = await module.exports.findById(accessToken.userId);
+    let user = await User.findOne({ where: { _id: accessToken.userId } });
     if (!user) throw Error('Invalid user.');
     return user;
 }

@@ -17,8 +17,12 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.DOUBLE,
             allowNull: true
         },
-        fees: {
-            type: DataTypes.INTEGER.UNSIGNED.ZEROFILL,
+        fixedFees: {
+            type: DataTypes.DOUBLE,
+            allowNull: true
+        },
+        percentFees: {
+            type: DataTypes.DOUBLE,
             allowNull: true
         }
     }, {
