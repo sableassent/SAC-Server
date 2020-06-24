@@ -13,7 +13,6 @@ router.get('/isActivated', UserController.verifyToken, EthereumController.isActi
 router.post('/activate', UserController.verifyToken, EthereumController.activate);
 router.post('/search', UserController.verifyToken, EthereumController.search);
 router.post('/downloadAsCsv', UserController.verifyToken, EthereumController.downloadAsCsv);
-router.post('/transferOwnership', UserController.verifyToken, EthereumController.transferOwnership);
 router.post('/withdraw', UserController.verifyToken, EthereumController.withdraw);
 router.post('/fees', UserController.verifyToken, EthereumController.setFees);
 

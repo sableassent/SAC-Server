@@ -234,36 +234,6 @@ exports.downloadAsCsv = async function (obj, user) {
     return csvData;
 }
 
-exports.transferOwnership = async function (obj) {
-    if (!obj.address) throw Error('Address is required.');
-    if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
-    obj.address = obj.address.toLowerCase();
-    if (!web3.utils.isAddress(obj.address)) throw Error('Invalid owner address.');
-    let token = new web3.eth.Contract(JSON.parse(fs.readFileSync('./contracts/SAC1.abi')), process.env.SAC1_ADDRESS);
-    token.defaultChain = process.env.CHAIN;
-    token.defaultHardfork = process.env.HARDFORK;
-    let txHash = await new Promise((resolve, reject) => {
-        let resolved = false;
-        token.methods.transferOwnership(obj.address).send({
-            from: web3.eth.accounts.wallet['0'].address,
-            gas: 200000
-        })
-            .once('transactionHash', hash => {
-                if (!resolved) {
-                    resolved = true;
-                    resolve(hash);
-                }
-            })
-            .on('error', error => {
-                if (!resolved) {
-                    resolved = true;
-                    reject(error);
-                }
-            });
-    });
-    return txHash;
-}
-
 exports.withdraw = async function (obj, user) {
     if (!obj.amount) throw Error('Amount is required.');
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');

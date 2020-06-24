@@ -61,15 +61,6 @@ exports.downloadAsCsv = async function (req, res, next) {
     }
 }
 
-exports.transferOwnership = async function (req, res, next) {
-    try {
-        await EthereumService.transferOwnership(req.body, req.user);
-        return res.status(200).send('Ownership transfered successfully.');
-    } catch (e) {
-        return res.status(500).send(e.message);
-    }
-}
-
 exports.withdraw = async function (req, res, next) {
     try {
         await EthereumService.withdraw(req.body, req.user);

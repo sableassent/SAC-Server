@@ -24,18 +24,6 @@ const EthereumService = {
             throw Error(error.message);
         }
     },
-    transferOwnership: async (obj) => {
-        try {
-            let response = await Server.request({
-                url: '/transferOwnership',
-                method: 'POST',
-                data: obj || {}
-            });
-            return response;
-        } catch (error) {
-            throw Error(error.message);
-        }
-    },
     withdraw: async (obj) => {
         try {
             let response = await Server.request({

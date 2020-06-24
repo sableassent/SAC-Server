@@ -112,25 +112,6 @@ class Dashboard extends Component {
     }
   }
 
-  async transferOwnership() {
-    try {
-      this.setState({ transferOwnershipLoader: true });
-      let response = await EthereumService.transferOwnership({ address: this.state.address });
-      this.setState({ transferOwnershipLoader: false });
-      this.setState({ address: '' });
-      this.notificationSystem.addNotification({
-        message: response,
-        level: 'success',
-      });
-    } catch (error) {
-      this.setState({ transferOwnershipLoader: false });
-      this.notificationSystem.addNotification({
-        message: error.message,
-        level: 'error',
-      });
-    }
-  }
-
   async withdraw() {
     try {
       this.setState({ withdrawLoader: true });
@@ -258,39 +239,6 @@ class Dashboard extends Component {
                   {
                     !this.state.activateWalletLoader &&
                     <Button type="submit" size="sm" color="success" disabled={this.state.walletActivated}>Activate</Button>
-                  }
-                </CardFooter>
-              </Form>
-            </Card>
-          </Col>
-          <Col xs="12" md="6">
-            <Card>
-              <Form action="" method="post" className="form-horizontal" onSubmit={(event) => { event.preventDefault(); this.transferOwnership() }}>
-                <CardHeader>
-                  <strong>Change Owner</strong>
-                </CardHeader>
-                <CardBody>
-                  <FormGroup row>
-                    <Col md="12">
-                      <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="fa fa-user"></i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input type="text" id="address" name="address" value={this.state.address} onChange={(event) => { event.persist(); this.setState({ address: event.target.value }) }} placeholder="Enter address" />
-                      </InputGroup>
-                    </Col>
-                  </FormGroup>
-                </CardBody>
-                <CardFooter>
-                  {
-                    this.state.transferOwnershipLoader &&
-                    <Spinner />
-                  }
-                  {
-                    !this.state.transferOwnershipLoader &&
-                    <Button type="submit" size="sm" color="success" disabled={!this.state.walletActivated}>Change</Button>
                   }
                 </CardFooter>
               </Form>
