@@ -295,7 +295,7 @@ exports.getSeparateFees = async function () {
 exports.getTotalFees = async function (amount) {
     let fees = await module.exports.getSeparateFees();
     let totalFees = new web3.utils.BN(Math.round(fees.fixed * 1000000) + '000000000000');
-    totalFees.add(new web3.utils.BN(amount).mul(new web3.utils.BN(Math.round(fees.percent * 100))).div(new web3.utils.BN(10000)));
+    totalFees = totalFees.add(new web3.utils.BN(amount).mul(new web3.utils.BN(Math.round(fees.percent * 100))).div(new web3.utils.BN(10000)));
     return totalFees.toString(10);
 }
 
