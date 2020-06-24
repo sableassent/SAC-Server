@@ -105,3 +105,13 @@ exports.getNonce = async function (req, res, next) {
         return res.status(500).send(e.message);
     }
 }
+
+exports.converter = async function (req, res, next) {
+    try {
+        if ((req.query.from == 'SAC1') && (req.query.to == 'USD')) return res.status(200).send("0.45");
+        if ((req.query.from == 'USD') && (req.query.to == 'SAC1')) return res.status(200).send("2.22");
+        throw Error('Invalid params.');
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}

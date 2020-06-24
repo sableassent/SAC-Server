@@ -9,6 +9,7 @@ router.get('/tx/:_id', EthereumController.getTransaction);
 router.get('/fees', EthereumController.getTotalFees);
 router.get('/separateFees', EthereumController.getSeparateFees);
 router.get('/nonce', EthereumController.getNonce);
+router.get('/converter', EthereumController.converter);
 router.get('/isActivated', UserController.verifyToken, EthereumController.isActivated);
 router.post('/activate', UserController.verifyToken, EthereumController.activate);
 router.post('/search', UserController.verifyToken, EthereumController.search);
