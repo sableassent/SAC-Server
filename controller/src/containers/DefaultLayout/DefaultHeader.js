@@ -7,6 +7,7 @@ import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/reac
 import logo from '../../assets/img/brand/logo.webp';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 import AuthService from '../../services/AuthService';
+import UserService from '../../services/UserService';
 import { black } from 'color-name';
 const propTypes = {
   children: PropTypes.node,
@@ -20,12 +21,14 @@ const DefaultHeader = (props) => {
   const { children, ...attributes } = props;
   const user = AuthService.getAuthUser();
   const history = useHistory();
-  const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('wallet');
-    localStorage.removeItem('authorization');
-
-    history.replace('/login');
+  const logout = async () => {
+    try {
+      await UserService.logout();
+      AuthService.setAuthorizationHeader('');
+      AuthService.setAuthUser({});
+      AuthService.setAuthWallet({});
+      history.replace('/login');
+    } catch (e) { }
   }
   return (
     <React.Fragment>

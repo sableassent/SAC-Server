@@ -1,8 +1,9 @@
 import axios from 'axios';
+import AuthService from './services/AuthService';
 
 export const request = async (obj) => {
     let headers = {};
-    let authorization = localStorage.getItem('authorization');
+    let authorization = AuthService.getAuthorizationHeader();
     if (authorization) headers['Authorization'] = authorization;
     try {
         if (obj.params) {

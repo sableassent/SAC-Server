@@ -38,9 +38,9 @@ const Basic = () => {
             setShowError(false);
             setSpinner(true);
             let response = await UserService.login(values);
-            AuthService.setAuthorizationHeader(response.tokenType + " " + response.accessToken);
-            AuthService.setAuthUser(response.user);
-            AuthService.setAuthWallet(response.wallet);
+            await AuthService.setAuthorizationHeader(response.tokenType + " " + response.accessToken);
+            await AuthService.setAuthUser(response.user);
+            await AuthService.setAuthWallet(response.wallet);
             setSpinner(false);
             history.replace('/dashboard');
 

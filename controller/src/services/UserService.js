@@ -13,6 +13,17 @@ const UserService = {
       throw Error(error);
     }
   },
+  logout: async () => {
+    try {
+      let response = await Server.request({
+        url: '/logout',
+        method: 'POST'
+      });
+      return response;
+    } catch (error) {
+      throw Error(error);
+    }
+  },
   me: async (obj) => {
     try {
       let response = await Server.request({

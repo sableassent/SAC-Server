@@ -1,18 +1,24 @@
+let authorization;
+let user;
+let wallet;
 const AuthService = {
-  setAuthorizationHeader: (authorization) => {
-    localStorage.setItem('authorization', authorization);
+  setAuthorizationHeader: (auth) => {
+    authorization = auth;
   },
-  setAuthUser: (user) => {
-    localStorage.setItem('user', JSON.stringify(user));
+  getAuthorizationHeader: () => {
+    return authorization;
+  },
+  setAuthUser: (obj) => {
+    user = obj;
   },
   getAuthUser: () => {
-    return JSON.parse(localStorage.getItem("user"));
+    return user;
   },
-  setAuthWallet: (wallet) => {
-    localStorage.setItem('wallet', JSON.stringify(wallet));
+  setAuthWallet: (obj) => {
+    wallet = obj;
   },
   getAuthWallet: () => {
-    return JSON.parse(localStorage.getItem("wallet"));
+    return wallet;
   },
 }
 

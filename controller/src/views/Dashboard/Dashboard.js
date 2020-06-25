@@ -49,10 +49,6 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    let user = AuthService.getAuthUser();
-    if (!user) {
-      this.props.history.replace('/login');
-    }
     this.isActivated();
     this.getMe();
     this.startBackground();
