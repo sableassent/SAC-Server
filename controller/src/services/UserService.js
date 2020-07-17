@@ -1,6 +1,6 @@
 import * as Server from '../Server';
 
-const UserService = {
+const AdminService = {
   login: async (obj) => {
     try {
       let response = await Server.request({
@@ -49,4 +49,4 @@ const UserService = {
   },
 }
 
-export default UserService;
+export default AdminService;

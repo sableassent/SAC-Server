@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const UserController = require('../controllers/user.controller');
+const UserController = require('../controllers/admin.controller');
 
 router.use('/login', UserController.login);
 router.get('/me', UserController.verifyToken, UserController.me);

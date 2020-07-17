@@ -21,12 +21,12 @@ exports.findAndCountAllTransaction = async function (match) {
     return count;
 }
 
-exports.isActivated = async function (user) {
+exports.isActivated = async function () {
     if (!web3.eth.accounts.wallet['0']) return false;
     return true;
 }
 
-exports.activate = async function (obj, user) {
+exports.activate = async function (obj) {
     if (web3.eth.accounts.wallet['0']) return;
     if (!obj.secretKey) throw Error();
     let wallet = await Wallet.findOne({});
@@ -95,7 +95,7 @@ exports.updateTransactionStatus = async function () {
     setTimeout(module.exports.updateTransactionStatus, (10 * 1000));
 }
 
-exports.transferEtherless = async (obj, user) => {
+exports.transferEtherless = async (obj) => {
     let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('This service is unavailable at the moment.');
     if (!web3.eth.accounts.wallet['0']) throw Error('This service is unavailable at the moment.');
@@ -204,7 +204,7 @@ exports.getTransaction = async (txHash) => {
     };
 }
 
-exports.search = async (obj, page, limit, user) => {
+exports.search = async (obj, page, limit) => {
     let match = module.exports.prepareMatchByFilter(obj);
     page = page > 1 ? page - 1 : 0;
     let transactions = await Transaction.findAll({ where: match, offset: (page * limit), limit: limit, order: [['createdAt', 'DESC']] });
@@ -212,7 +212,7 @@ exports.search = async (obj, page, limit, user) => {
     return [transactions, count];
 }
 
-exports.downloadAsCsv = async function (obj, user) {
+exports.downloadAsCsv = async function (obj) {
     let csvData = [['Hash', 'From', 'To', 'Amount', 'Fees', 'Nonce', 'Status', 'Date']];
     let match = module.exports.prepareMatchByFilter(obj);
     let transactions = await Transaction.findAll({ where: match, order: [['createdAt', 'DESC']] });
@@ -234,7 +234,7 @@ exports.downloadAsCsv = async function (obj, user) {
     return csvData;
 }
 
-exports.withdraw = async function (obj, user) {
+exports.withdraw = async function (obj) {
     if (!obj.amount) throw Error('Amount is required.');
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
     let wallet = await Wallet.findOne({});
@@ -269,7 +269,7 @@ exports.withdraw = async function (obj, user) {
     return txHash;
 }
 
-exports.setFees = async function (obj, user) {
+exports.setFees = async function (obj) {
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
     let wallet = await Wallet.findOne({});
     if (!wallet) throw Error('Wallet not found.');

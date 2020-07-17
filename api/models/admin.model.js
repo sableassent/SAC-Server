@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('User', {
+    return sequelize.define('Admin', {
         _id: {
             type: DataTypes.STRING(256),
             allowNull: false,
@@ -18,6 +18,6 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         }
     }, {
-        tableName: 'User'
+        tableName: 'Admin'
     });
 };

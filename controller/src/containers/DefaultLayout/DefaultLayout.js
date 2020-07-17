@@ -35,8 +35,8 @@ class DefaultLayout extends Component {
   }
 
   componentDidMount() {
-    let user = AuthService.getAuthUser();
-    if (!user) {
+    let admin = AuthService.getAuthAdmin();
+    if (!admin) {
       this.props.history.replace('/login');
     }
   }

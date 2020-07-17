@@ -1,7 +1,7 @@
 CREATE DATABASE sablecoin;
 USE sablecoin;
 
-CREATE TABLE IF NOT EXISTS `User` (
+CREATE TABLE IF NOT EXISTS `Admin` (
   `_id` varchar(256) NOT NULL,
   `name` varchar(256) NOT NULL,
   `email` varchar(256) NOT NULL,
@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS `User` (
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `AccessToken` (
+CREATE TABLE IF NOT EXISTS `AdminAccessToken` (
   `_id` varchar(256) NOT NULL,
-  `userId` varchar(256) NOT NULL,
+  `adminId` varchar(256) NOT NULL,
   `isActive` boolean NOT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

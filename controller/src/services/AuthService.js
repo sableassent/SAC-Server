@@ -1,5 +1,5 @@
 let authorization;
-let user;
+let admin;
 let wallet;
 const AuthService = {
   setAuthorizationHeader: (auth) => {
@@ -8,11 +8,11 @@ const AuthService = {
   getAuthorizationHeader: () => {
     return authorization;
   },
-  setAuthUser: (obj) => {
-    user = obj;
+  setAuthAdmin: (obj) => {
+    admin = obj;
   },
-  getAuthUser: () => {
-    return user;
+  getAuthAdmin: () => {
+    return admin;
   },
   setAuthWallet: (obj) => {
     wallet = obj;

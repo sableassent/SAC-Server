@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const UserController = require('../controllers/user.controller');
+const UserController = require('../controllers/admin.controller');
 const EthereumController = require('../controllers/ethereum.controller');
 
 router.post('/transferEtherless', EthereumController.transferEtherless);

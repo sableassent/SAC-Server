@@ -1,11 +1,11 @@
 module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('AccessToken', {
+    return sequelize.define('AdminAccessToken', {
         _id: {
             type: DataTypes.STRING(256),
             allowNull: false,
             primaryKey: true
         },
-        userId: {
+        adminId: {
             type: DataTypes.STRING(256),
             allowNull: false
         },
@@ -14,6 +14,6 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         }
     }, {
-        tableName: 'AccessToken'
+        tableName: 'AdminAccessToken'
     });
 };

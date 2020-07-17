@@ -4,7 +4,7 @@ import { Button, Alert, Card, CardBody, CardGroup, Spinner, Col, Container, Form
 import { Formik } from 'formik';
 import logo from '../../../assets/img/brand/logo.webp';
 import AuthService from '../../../services/AuthService';
-import UserService from '../../../services/UserService';
+import AdminService from '../../../services/AdminService';
 
 const Basic = () => {
   let history = useHistory();
@@ -37,9 +37,9 @@ const Basic = () => {
           try {
             setShowError(false);
             setSpinner(true);
-            let response = await UserService.login(values);
-            await AuthService.setAuthorizationHeader(response.tokenType + " " + response.accessToken);
-            await AuthService.setAuthUser(response.user);
+            let response = await AdminService.login(values);
+            await AuthService.setAuthorizationHeader(response.tokenType + " " + response.adminAccessToken);
+            await AuthService.setAuthAdmin(response.admin);
             await AuthService.setAuthWallet(response.wallet);
             setSpinner(false);
             history.replace('/dashboard');

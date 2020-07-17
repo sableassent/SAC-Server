@@ -1,13 +1,13 @@
-const UserService = require('./../services/user.service');
+const AdminService = require('../services/admin.service');
 const EthereumService = require('../services/ethereum.service');
 
 exports.login = async function (req, res, next) {
     try {
-        let [accessToken, user, wallet] = await UserService.login(req.body);
+        let [adminAccessToken, admin, wallet] = await AdminService.login(req.body);
         return res.status(200).json({
             tokenType: 'Bearer',
-            accessToken: accessToken,
-            user: user,
+            adminAccessToken: adminAccessToken,
+            admin: admin,
             wallet: wallet
         });
     } catch (e) {
@@ -27,7 +27,7 @@ exports.verifyToken = async function (req, res, next) {
         if (scheme.toLowerCase() != 'bearer') {
             return res.sendStatus(401);
         }
-        req.user = await UserService.findByAccessToken(token);
+        req.admin = await AdminService.findByAccessToken(token);
         next();
     } catch (e) {
         return res.sendStatus(401);
@@ -37,7 +37,7 @@ exports.verifyToken = async function (req, res, next) {
 exports.me = async function (req, res, next) {
     try {
         let wallet = await EthereumService.getWallet();
-        let user = await UserService.findById(req.user._id);
+        let admin = await AdminService.findById(req.admin._id);
         let contractBalanceSAC = await EthereumService.balanceOf(process.env.SAC1_ADDRESS);
         let totalTransaction = await EthereumService.findAndCountAllTransaction({});
         const todayStartDate = new Date().setHours(0, 0, 0);
@@ -45,7 +45,7 @@ exports.me = async function (req, res, next) {
         let match = { where: { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } } };
         let todayTotalTransaction = await EthereumService.findAndCountAllTransaction(match);
         return res.status(200).json({
-            user: user,
+            admin: admin,
             wallet: wallet,
             contractBalanceSAC: contractBalanceSAC,
             totalTransaction: totalTransaction,
@@ -58,7 +58,7 @@ exports.me = async function (req, res, next) {
 
 exports.changePassword = async function (req, res, next) {
     try {
-        await UserService.changePassword(req.body, req.user);
+        await AdminService.changePassword(req.body, req.admin);
         return res.status(200).send('Password updated successfully.');
     } catch (e) {
         return res.status(500).send(e.message);
@@ -68,8 +68,8 @@ exports.changePassword = async function (req, res, next) {
 exports.logout = async function (req, res, next) {
     try {
         let [scheme, token] = req.headers['authorization'].toString().split(' ');
-        await UserService.logout(token);
-        return res.status(200).send('User logout successfully.');
+        await AdminService.logout(token);
+        return res.status(200).send('Logged out successfully.');
     } catch (e) {
         return res.status(500).send(e.message);
     }

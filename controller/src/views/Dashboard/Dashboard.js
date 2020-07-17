@@ -20,7 +20,7 @@ import NotificationSystem from 'react-notification-system';
 import { NOTIFICATION_SYSTEM_STYLE } from '../../NotificationSetting';
 
 import AuthService from '../../services/AuthService';
-import UserService from '../../services/UserService';
+import AdminService from '../../services/AdminService';
 import EthereumService from '../../services/EthereumService';
 
 class Dashboard extends Component {
@@ -65,7 +65,7 @@ class Dashboard extends Component {
 
   async getMe() {
     try {
-      let response = await UserService.me();
+      let response = await AdminService.me();
       this.setState({
         counts: {
           balanceETH: response.wallet.balanceETH,

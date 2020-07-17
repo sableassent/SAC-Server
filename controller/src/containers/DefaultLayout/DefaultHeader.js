@@ -7,7 +7,7 @@ import { AppAsideToggler, AppNavbarBrand, AppSidebarToggler } from '@coreui/reac
 import logo from '../../assets/img/brand/logo.webp';
 import sygnet from '../../assets/img/brand/sygnet.svg';
 import AuthService from '../../services/AuthService';
-import UserService from '../../services/UserService';
+import AdminService from '../../services/AdminService';
 import { black } from 'color-name';
 const propTypes = {
   children: PropTypes.node,
@@ -19,13 +19,13 @@ const DefaultHeader = (props) => {
 
   // eslint-disable-next-line
   const { children, ...attributes } = props;
-  const user = AuthService.getAuthUser();
+  const admin = AuthService.getAuthAdmin();
   const history = useHistory();
   const logout = async () => {
     try {
-      await UserService.logout();
+      await AdminService.logout();
       AuthService.setAuthorizationHeader('');
-      AuthService.setAuthUser({});
+      AuthService.setAuthAdmin({});
       AuthService.setAuthWallet({});
       history.replace('/login');
     } catch (e) { }
@@ -46,12 +46,12 @@ const DefaultHeader = (props) => {
         </NavItem>
       </Nav>
       {
-        user &&
+        admin &&
         <Nav className="ml-auto" navbar>
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
-              <span>{user.name}</span>
-              <img src={'../../assets/img/avatars/1.png'} className="img-avatar" alt={user.email} />
+              <span>{admin.name}</span>
+              <img src={'../../assets/img/avatars/1.png'} className="img-avatar" alt={admin.email} />
             </DropdownToggle>
             <DropdownMenu right>
               <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>

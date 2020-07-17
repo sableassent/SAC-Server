@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Button, Spinner, Card, Alert, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 import { Formik } from 'formik';
-import UserService from '../../../services/UserService';
+import AdminService from '../../../services/AdminService';
 
 const Basic = () => {
     let history = useHistory();
@@ -45,7 +45,7 @@ const Basic = () => {
                         setShowError(false);
                         setSpinner(true);
                         delete values.confirmPassword;
-                        await UserService.changePassword(values);
+                        await AdminService.changePassword(values);
                         setSpinner(false);
                         history.replace('/dashboard');
                     } catch (e) {
