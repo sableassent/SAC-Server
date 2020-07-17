@@ -1,11 +1,11 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const UserController = require('../controllers/admin.controller');
+const AdminController = require('../controllers/admin.controller');
 
-router.use('/login', UserController.login);
-router.get('/me', UserController.verifyToken, UserController.me);
-router.post('/changePassword', UserController.verifyToken, UserController.changePassword);
-router.post('/logout', UserController.verifyToken, UserController.logout);
+router.use('/login', AdminController.login);
+router.get('/me', AdminController.verifyToken, AdminController.me);
+router.post('/changePassword', AdminController.verifyToken, AdminController.changePassword);
+router.post('/logout', AdminController.verifyToken, AdminController.logout);
 
 module.exports = router;

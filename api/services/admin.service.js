@@ -29,7 +29,7 @@ exports.findByEmail = async function (email) {
 }
 
 exports.login = async function (obj) {
-    if (!obj.email) throw Error('Eamil is required.');
+    if (!obj.email) throw Error('Email is required.');
     if (!obj.password) throw Error('Password is required.');
     if (!await utils.isEmail(obj.email)) throw Error('Provide valid email address.');
     let admin = await module.exports.findByEmail(obj.email);

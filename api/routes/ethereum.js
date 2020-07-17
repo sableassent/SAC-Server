@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const UserController = require('../controllers/admin.controller');
+const AdminController = require('../controllers/admin.controller');
 const EthereumController = require('../controllers/ethereum.controller');
 
 router.post('/transferEtherless', EthereumController.transferEtherless);
@@ -10,11 +10,11 @@ router.get('/fees', EthereumController.getTotalFees);
 router.get('/separateFees', EthereumController.getSeparateFees);
 router.get('/nonce', EthereumController.getNonce);
 router.get('/converter', EthereumController.converter);
-router.get('/isActivated', UserController.verifyToken, EthereumController.isActivated);
-router.post('/activate', UserController.verifyToken, EthereumController.activate);
-router.post('/search', UserController.verifyToken, EthereumController.search);
-router.post('/downloadAsCsv', UserController.verifyToken, EthereumController.downloadAsCsv);
-router.post('/withdraw', UserController.verifyToken, EthereumController.withdraw);
-router.post('/fees', UserController.verifyToken, EthereumController.setFees);
+router.get('/isActivated', AdminController.verifyToken, EthereumController.isActivated);
+router.post('/activate', AdminController.verifyToken, EthereumController.activate);
+router.post('/search', AdminController.verifyToken, EthereumController.search);
+router.post('/downloadAsCsv', AdminController.verifyToken, EthereumController.downloadAsCsv);
+router.post('/withdraw', AdminController.verifyToken, EthereumController.withdraw);
+router.post('/fees', AdminController.verifyToken, EthereumController.setFees);
 
 module.exports = router;
