@@ -14,6 +14,11 @@ exports.findById = async function (_id) {
     return admin || null;
 }
 
+exports.findByEmail = async function (email) {
+    let admin = await Admin.findOne({ where: { email: email } });
+    return admin || null;
+}
+
 exports.findByAccessToken = async function (token) {
     let adminAccessToken = await AdminAccessToken.findOne({ where: { _id: token } });
     if (!adminAccessToken) throw Error('Invalid access token.');
@@ -23,9 +28,13 @@ exports.findByAccessToken = async function (token) {
     return admin;
 }
 
-exports.findByEmail = async function (email) {
-    let admin = await Admin.findOne({ where: { email: email } });
-    return admin || null;
+exports.createPasswordHash = function (password) {
+    return twinBcrypt.hashSync(process.env.PASSWORD_SALT + md5(password));
+}
+
+exports.verifyPassword = function (admin, password) {
+    let passwordHash = process.env.PASSWORD_SALT + md5(password);
+    return twinBcrypt.compareSync(passwordHash, admin.password);
 }
 
 exports.login = async function (obj) {
@@ -42,8 +51,8 @@ exports.login = async function (obj) {
         isActive: true,
     });
     admin = await module.exports.findById(admin._id);
-    let wallet = await EthereumService.getWallet(admin._id);
-    return [adminAccessToken, admin, wallet];
+    // let wallet = await EthereumService.getWallet(admin._id);
+    return [adminAccessToken, admin];
 }
 
 exports.create = async function (obj) {
@@ -62,15 +71,6 @@ exports.create = async function (obj) {
     return _id;
 }
 
-exports.createPasswordHash = function (password) {
-    return twinBcrypt.hashSync(process.env.PASSWORD_SALT + md5(password));
-}
-
-exports.verifyPassword = function (admin, password) {
-    let passwordHash = process.env.PASSWORD_SALT + md5(password);
-    return twinBcrypt.compareSync(passwordHash, admin.password);
-}
-
 exports.changePassword = async function (obj, admin) {
     if (!obj.newPassword) throw Error('New password is required.');
     if (!obj.oldPassword) throw Error('Old password is required.');
@@ -82,6 +82,10 @@ exports.changePassword = async function (obj, admin) {
             _id: admin._id
         }
     });
+}
+
+exports.resetPassword = async function (obj, admin) {
+    //Node Mailer
 }
 
 exports.logout = async function (token) {

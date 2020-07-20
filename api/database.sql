@@ -9,9 +9,25 @@ CREATE TABLE IF NOT EXISTS `Admin` (
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS `User` (
+  `_id` varchar(256) NOT NULL,
+  `name` varchar(256) NOT NULL,
+  `email` varchar(256) NOT NULL,
+  `password` varchar(256) NOT NULL,
+  `walletAddress` varchar(256) NULL,
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
 CREATE TABLE IF NOT EXISTS `AdminAccessToken` (
   `_id` varchar(256) NOT NULL,
   `adminId` varchar(256) NOT NULL,
+  `isActive` boolean NOT NULL,
+  PRIMARY KEY (`_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `UserAccessToken` (
+  `_id` varchar(256) NOT NULL,
+  `userId` varchar(256) NOT NULL,
   `isActive` boolean NOT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

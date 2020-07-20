@@ -1,9 +1,9 @@
-const AdminService = require('../services/admin.service');
+const UserService = require('../services/user.service');
 const EthereumService = require('../services/ethereum.service');
 
-exports.create = async function (req, res, next) {
+exports.userCreate = async function (req, res, next) {
     try {
-        let _id = await AdminService.create(req.body);
+        let _id = await UserService.userCreate(req.body);
         return res.status(200).json({
             id: _id
         });
@@ -12,13 +12,13 @@ exports.create = async function (req, res, next) {
     }
 }
 
-exports.login = async function (req, res, next) {
+exports.userLogin = async function (req, res, next) {
     try {
-        let [adminAccessToken, admin] = await AdminService.login(req.body);
+        let [userAccessToken, user] = await UserService.userLogin(req.body);
         return res.status(200).json({
             tokenType: 'Bearer',
-            adminAccessToken: adminAccessToken,
-            admin: admin,
+            userAccessToken: userAccessToken,
+            user: user,
         });
     } catch (e) {
         return res.status(500).send(e.message);
@@ -37,17 +37,16 @@ exports.verifyToken = async function (req, res, next) {
         if (scheme.toLowerCase() != 'bearer') {
             return res.sendStatus(401);
         }
-        req.admin = await AdminService.findByAccessToken(token);
+        req.user = await UserService.findByAccessToken(token);
         next();
     } catch (e) {
         return res.sendStatus(401);
     }
 }
 
-exports.me = async function (req, res, next) {
+exports.userMe = async function (req, res, next) {
     try {
-        let wallet = await EthereumService.getWallet();
-        let admin = await AdminService.findById(req.admin._id);
+        let user = await UserService.findById(req.user._id);
         let contractBalanceSAC = await EthereumService.balanceOf(process.env.SAC1_ADDRESS);
         let totalTransaction = await EthereumService.findAndCountAllTransaction({});
         const todayStartDate = new Date().setHours(0, 0, 0);
@@ -55,8 +54,7 @@ exports.me = async function (req, res, next) {
         let match = { where: { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } } };
         let todayTotalTransaction = await EthereumService.findAndCountAllTransaction(match);
         return res.status(200).json({
-            admin: admin,
-            wallet: wallet,
+            user: user,
             contractBalanceSAC: contractBalanceSAC,
             totalTransaction: totalTransaction,
             todayTotalTransaction: todayTotalTransaction
@@ -66,28 +64,37 @@ exports.me = async function (req, res, next) {
     }
 }
 
-exports.changePassword = async function (req, res, next) {
+exports.userChangePassword = async function (req, res, next) {
     try {
-        await AdminService.changePassword(req.body, req.admin);
+        await UserService.userChangePassword(req.body, req.user);
         return res.status(200).send('Password updated successfully.');
     } catch (e) {
         return res.status(500).send(e.message);
     }
 }
 
-exports.resetPassword = async function (req, res, next) {
+exports.addWalletAddress = async function (req, res, next) {
     try {
-        await AdminService.resetPassword(req.body, req.admin);
+        await UserService.addWalletAddress(req.body, req.user);
+        return res.status(200).send('Wallet Address updated successfully.');
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.userResetPassword = async function (req, res, next) {
+    try {
+        await UserService.userResetPassword(req.body, req.user);
         return res.status(200).send('Password reset successfully.');
     } catch (e) {
         return res.status(500).send(e.message);
     }
 }
 
-exports.logout = async function (req, res, next) {
+exports.userLogout = async function (req, res, next) {
     try {
         let [scheme, token] = req.headers['authorization'].toString().split(' ');
-        await AdminService.logout(token);
+        await UserService.userLogout(token);
         return res.status(200).send('Logged out successfully.');
     } catch (e) {
         return res.status(500).send(e.message);

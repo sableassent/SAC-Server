@@ -20,6 +20,6 @@ async function _startServer() {
     EthereumService.updateBalance();
     EthereumService.updateTransactionStatus();
     await http.createServer(app).listen(80, "0.0.0.0", function () {
-        console.log('Express server stated');
+        console.log('Express server started');
     });
 }
