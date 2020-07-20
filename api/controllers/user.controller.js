@@ -94,7 +94,7 @@ exports.userResetPassword = async function (req, res, next) {
 
 exports.userNewPassword = async function (req, res, next) {
     try {
-        const response = PasswordResetService.userNewPassword(req.body);
+        const response = await PasswordResetService.userNewPassword(req.body);
         return res.status(200).send(response);
     } catch (e) {
         return res.status(500).send(e.message);

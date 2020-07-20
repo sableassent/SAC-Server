@@ -3,6 +3,8 @@ const utils = require('../utils');
 const emailUtils = require("../utils/emailUtils")
 const PasswordReset = require('../models').PasswordReset;
 
+const otpExpiryTimeMinutes = 15;
+
 /**
  * Find the password reset token from PasswordReset Database using email address
  * @param email {string}
@@ -15,6 +17,12 @@ exports.findByEmail = async function (email) {
         where: { userEmail: email }
     });
     return passwordResetToken || null;
+}
+
+exports.deleteByEmail = async function (email) {
+    if(!email) throw Error("Email not present");
+    if(!await utils.isEmail(email)) throw Error("Invalid email format");
+    return PasswordReset.destroy({where: {userEmail: email}});
 }
 
 /**
@@ -32,13 +40,28 @@ exports.userNewPassword = async function (obj) {
 
     const passwordResetToken = await module.exports.findByEmail(email);
 
-    const {otp: sentOTP} = passwordResetToken;
+    if(!passwordResetToken) throw Error("Invalid request");
 
-    if(sentOTP === otp){
-        const user = await UserService.findByEmail(obj.email);
-        await UserService.userChangePasswordFn(obj.newPassword, user);
+    const createdAt = passwordResetToken.createdAt;
+
+    // Add minutes to get time of expiry
+    createdAt.setDate(createdAt.getMinutes() + otpExpiryTimeMinutes);
+    const currentTime = new Date();
+
+    // check if expiry time is greater than currentTime
+    if(createdAt > currentTime) {
+
+        const {otp: sentOTP} = passwordResetToken;
+
+        if (sentOTP === otp) {
+            const user = await UserService.findByEmail(email);
+            await UserService.userChangePasswordFn(newPassword, user);
+            await module.exports.deleteByEmail(email);
+        } else {
+            throw Error("OTP does not match");
+        }
     }else{
-        throw Error("OTP does not match");
+        throw Error("Transaction has expired.");
     }
     return "Password Reset Success";
 }
@@ -57,6 +80,12 @@ exports.userResetPassword = async function (obj) {
     const user = await UserService.findByEmail(email);
     if(user == null){
         throw Error(returnMessage);
+    }
+
+    const previousResetToken = await module.exports.findByEmail(email);
+    // delete previous token if present
+    if (previousResetToken){
+        await PasswordReset.destroy({where: { userEmail: email }})
     }
     const otp   = utils.getUid(6, 'numeric');
 
