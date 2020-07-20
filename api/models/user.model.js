@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         walletAddress: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: true
         }
     }, {
         tableName: 'User'
