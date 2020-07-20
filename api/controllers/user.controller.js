@@ -1,5 +1,6 @@
 const UserService = require('../services/user.service');
 const EthereumService = require('../services/ethereum.service');
+const PasswordResetService = require('../services/passwordReset.service');
 
 exports.userCreate = async function (req, res, next) {
     try {
@@ -84,8 +85,17 @@ exports.addWalletAddress = async function (req, res, next) {
 
 exports.userResetPassword = async function (req, res, next) {
     try {
-        await UserService.userResetPassword(req.body, req.user);
-        return res.status(200).send('Password reset successfully.');
+        const response = await PasswordResetService.userResetPassword(req.body);
+        return res.status(200).send(response);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.userNewPassword = async function (req, res, next) {
+    try {
+        const response = PasswordResetService.userNewPassword(req.body);
+        return res.status(200).send(response);
     } catch (e) {
         return res.status(500).send(e.message);
     }

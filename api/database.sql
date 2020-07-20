@@ -56,3 +56,12 @@ CREATE TABLE IF NOT EXISTS `Transaction` (
   `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `PasswordReset` (
+    `_id`       varchar(256) NOT NULL,
+    `userId`    varchar(256) NOT NULL,
+    `otp`       varchar(10)  NOT NULL,
+    `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (`_id`)
+    FOREIGN KEY (`user_id`) REFERENCES `User`(`_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

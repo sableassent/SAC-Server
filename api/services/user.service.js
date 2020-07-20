@@ -71,12 +71,8 @@ exports.userCreate = async function (obj) {
     return _id;
 }
 
-exports.userChangePassword = async function (obj, user) {
-    if (!obj.newPassword) throw Error('New password is required.');
-    if (!obj.oldPassword) throw Error('Old password is required.');
-    if (obj.oldPassword == obj.newPassword) throw Error('Old password and new password should not be same.');
-    if (!module.exports.verifyPassword(user, obj.oldPassword)) throw Error('Wrong old password, please try again.');
-    let passwordHash = module.exports.createPasswordHash(obj.newPassword);
+exports.userChangePasswordFn = async function(newPassword, user){
+    let passwordHash = module.exports.createPasswordHash(newPassword);
     await User.update({ password: passwordHash }, {
         where: {
             _id: user._id
@@ -84,8 +80,12 @@ exports.userChangePassword = async function (obj, user) {
     });
 }
 
-exports.userResetPassword = async function (obj, admin) {
-    //Node Mailer
+exports.userChangePassword = async function (obj, user) {
+    if (!obj.newPassword) throw Error('New password is required.');
+    if (!obj.oldPassword) throw Error('Old password is required.');
+    if (obj.oldPassword == obj.newPassword) throw Error('Old password and new password should not be same.');
+    if (!module.exports.verifyPassword(user, obj.oldPassword)) throw Error('Wrong old password, please try again.');
+    await module.exports.userChangePasswordFn(obj.newPassword, user);
 }
 
 exports.addWalletAddress = async function (obj, user) {
