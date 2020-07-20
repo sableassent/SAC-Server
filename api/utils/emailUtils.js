@@ -19,12 +19,12 @@ const transport = nodemailer.createTransport({
  * @param user  {string}
  * @param email {string}
  * @param otp   {string}
- * @returns {Promise<any>}
+ * @returns     {Promise<any>}
  */
 module.exports.sendPasswordResetMail = async function(user, email, otp) {
 
     const mailOptions = {
-        from: 'Sable Accent',
+        from: '"Sable Assent 👻" <info@sableassent.co>',
         to: `${email}`,
         subject: 'Password Reset help',
         text: `Hey, you (or someone else) requested a password reset. Enter the following otp into the app to continue.` +
