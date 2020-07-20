@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `password` varchar(256) NOT NULL,
   `walletAddress` varchar(256) NULL,
   `referralCode` varchar(256) NOT NULL,
+  `phoneNumberVerified` boolean NOT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 

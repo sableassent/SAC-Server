@@ -60,17 +60,19 @@ exports.userCreate = async function (obj) {
     if (!await utils.isEmail(obj.email)) throw Error('Provide valid email address.');
     let _id = utils.getUid(92, 'alphaNumeric');
     let passwordHash = module.exports.createPasswordHash(obj.password);
-    let referralCode = utils.getUid(6, 'alphaNumeric');
+    let referralCode = obj.name.substring(0, 4);
+    referralCode += utils.getUid(4, 'alphaNumeric');
     await User.create({
         _id: _id,
         name: obj.name,
         email: obj.email,
         phoneNumber: obj.phoneNumber,
         password: passwordHash,
-        referralCode: referralCode
+        referralCode: referralCode,
+        phoneNumberVerified: false
     },
         {
-        fields:["_id", "name", "email", "phoneNumber", "password", "referralCode"]
+        fields:["_id", "name", "email", "phoneNumber", "password", "referralCode", "phoneNumberVerified"]
     });
     return _id;
 }
