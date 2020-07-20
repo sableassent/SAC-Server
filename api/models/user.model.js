@@ -3,25 +3,26 @@ module.exports = function (sequelize, DataTypes) {
         _id: {
             type: DataTypes.STRING(256),
             allowNull: false,
-            primaryKey: true
+            primaryKey: true,
         },
         name: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: false,
         },
         email: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: false,
+            unique: true,
         },
         password: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: false,
         },
         walletAddress: {
             type: DataTypes.STRING(256),
-            allowNull: true
+            allowNull: true,
         }
     }, {
-        tableName: 'User'
+        tableName: 'User',
     });
 };
