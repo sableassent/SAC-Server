@@ -13,8 +13,10 @@ CREATE TABLE IF NOT EXISTS `User` (
   `_id` varchar(256) NOT NULL,
   `name` varchar(256) NOT NULL,
   `email` varchar(256) NOT NULL,
+  `phoneNumber` varchar(256) NOT NULL,
   `password` varchar(256) NOT NULL,
   `walletAddress` varchar(256) NULL,
+  `referralCode` varchar(256) NOT NULL,
   PRIMARY KEY (`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
