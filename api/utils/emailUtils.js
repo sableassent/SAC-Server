@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const request = require("request");
 
 /**
  * Create a SMTP nodemailer transport for sending mails.
@@ -16,7 +17,7 @@ const transport = nodemailer.createTransport({
 
 /**
  * Send password reset email to user
- * @param user  {string}
+ * @param user  {User}
  * @param email {string}
  * @param otp   {string}
  * @returns     {Promise<any>}
@@ -28,8 +29,8 @@ module.exports.sendPasswordResetMail = async function(user, email, otp) {
         to: `${email}`,
         subject: 'Password Reset help',
         text: `Hey, you (or someone else) requested a password reset. Enter the following otp into the app to continue.` +
-                `\n ${otp} \n` +
-                `If this was not you, you can safely ignore this email`,
+            `\n ${otp} \n` +
+            `If this was not you, you can safely ignore this email`,
     };
 
     return transport.sendMail(mailOptions, (error, info) => {
@@ -39,3 +40,42 @@ module.exports.sendPasswordResetMail = async function(user, email, otp) {
         console.log('Message sent: %s', info.messageId);
     });
 }
+
+const SG_API_KEY = process.env.SENDGRID_API_KEY;
+
+/**
+ * Send password reset email to user
+ * @param user  {User}
+ * @param email {string}
+ * @param otp   {string}
+ * @param callback {function}
+ * @returns     {Promise<any>}
+ */
+module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
+
+    let options = { method: 'POST',
+        url: 'https://api.sendgrid.com/v3/mail/send',
+        headers:
+            {
+                "Authorization": `Bearer ${SG_API_KEY}`,
+                "content-type": "application/json"
+            },
+        body:
+            { personalizations:
+                    [{ to: [ { email: email, name: 'John Doe' } ],
+                        dynamic_template_data:
+                            {
+                                OTP: otp ,
+                                account_name: user.name
+                            },
+                        subject: 'Password Reset Help' } ],
+                from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
+                reply_to: { email: 'support@sableaccent.co', name: 'Sable Assent' },
+                template_id: 'd-d1cdb1d314664bae921011b5d93adaf7' },
+        json: true };
+
+    request(options, callback);
+}
+
+
+
