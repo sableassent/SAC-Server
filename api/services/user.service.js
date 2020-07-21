@@ -13,7 +13,7 @@ const otpExpiryTimeMinutes = 15;
 
 exports.findById = async function (_id) {
     let user = await User.findOne({
-        attributes: ["_id", "name", "email", "walletAddress"],
+        attributes: ["_id", "name", "username", "email", "phoneNumber", "walletAddress", "referralCode", "phoneNumberVerified"],
         where: { _id: _id },
     });
     return user || null;
@@ -60,6 +60,7 @@ exports.verifyPassword = function (user, password) {
     let passwordHash = process.env.PASSWORD_SALT + md5(password);
     return twinBcrypt.compareSync(passwordHash, user.password);
 };
+
 exports.userLogin = async function (obj) {
     if (!obj.email) throw Error("Email is required.");
     if (!obj.password) throw Error("Password is required.");
