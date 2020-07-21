@@ -270,7 +270,7 @@ exports.sendOTP = async function (obj) {
                 otp: otp,
             });
         }).catch((error) => {
-            throw Error(e);
+            console.error(error);
         })
 };
 
