@@ -81,6 +81,7 @@ exports.userLogin = async function (obj) {
 
 exports.userCreate = async function (obj) {
     if (!obj.name) throw Error("Name is required.");
+    if (!obj.username) throw Error("UserName is required.");
     if (!obj.email) throw Error("Email is required.");
     if (!obj.phoneNumber) throw Error("Phone Number is required.");
     if (!obj.password) throw Error("Password is required.");
@@ -94,6 +95,7 @@ exports.userCreate = async function (obj) {
         {
             _id: _id,
             name: obj.name,
+            username: obj.username,
             email: obj.email,
             phoneNumber: obj.phoneNumber,
             password: passwordHash,
@@ -104,6 +106,7 @@ exports.userCreate = async function (obj) {
             fields: [
                 "_id",
                 "name",
+                "username",
                 "email",
                 "phoneNumber",
                 "password",
