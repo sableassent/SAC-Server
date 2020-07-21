@@ -68,3 +68,25 @@ CREATE TABLE IF NOT EXISTS `PasswordReset` (
     PRIMARY KEY (`_id`)
     FOREIGN KEY (`user_id`) REFERENCES `User`(`_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `Referral` (
+    `_id`       varchar(256) NOT NULL,
+    `from`    varchar(256) NOT NULL,
+    `to`       varchar(256)  NOT NULL,
+    `referralCode` varchar(10)  NOT NULL,
+    `status`       varchar(10)  NOT NULL,
+    `transactionHash`       varchar(256) NULL,
+    `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(),
+    `completedAt` TIMESTAMP NULL,
+    PRIMARY KEY (`_id`)
+    FOREIGN KEY (`from`) REFERENCES `User`(`_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `OTPMobile` (
+    `_id`       varchar(256) NOT NULL,
+    `userid`    varchar(256) NOT NULL UNIQUE,
+    `phoneNumber`    varchar(256) NOT NULL UNIQUE,
+    `otp`       varchar(256)  NOT NULL,
+    `createdAt` TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (`_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;

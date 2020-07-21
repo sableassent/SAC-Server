@@ -110,3 +110,30 @@ exports.userLogout = async function (req, res, next) {
         return res.status(500).send(e.message);
     }
 }
+
+exports.addReferral = async function (req, res, next) {
+    try {
+        const response = await UserService.addReferral(req.body);
+        return res.status(200).send(response);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.sendOTP = async function (req, res, next) {
+    try {
+        await UserService.sendOTP(req.body);
+        return res.status(200).send('OTP sent successfully.');
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.verifyOTP = async function (req, res, next) {
+    try {
+        await UserService.verifyOTP(req.body);
+        return res.status(200).send('OTP verified successfully.');
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}

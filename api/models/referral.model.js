@@ -1,42 +1,41 @@
+const Sequelize = require("sequelize");
 module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('User', {
+    return sequelize.define('Referral', {
         _id: {
             type: DataTypes.STRING(256),
             allowNull: false,
             primaryKey: true
         },
-        name: {
+        from: {
             type: DataTypes.STRING(256),
             allowNull: false
         },
-        email: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            unique: true,
-        },
-        phoneNumber: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            unique: true,
-        },
-        password: {
+        to: {
             type: DataTypes.STRING(256),
             allowNull: false
-        },
-        walletAddress: {
-            type: DataTypes.STRING(256),
-            allowNull: true
         },
         referralCode: {
             type: DataTypes.STRING(256),
             allowNull: false
         },
-        phoneNumberVerified: {
+        status: {
             type: DataTypes.STRING(256),
+            allowNull: false
+        },
+        transactionHash: {
+            type: DataTypes.STRING(256),
+            allowNull: true
+        },
+        createdAt: {
+            type: Sequelize.DATE,
             allowNull: false,
-            defaultValue: false
+            defaultValue: Sequelize.NOW
+        },
+        completedAt: {
+            type: Sequelize.DATE,
+            allowNull: true,
         },
     }, {
-        tableName: 'User'
+        tableName: 'Referral'
     });
 };
