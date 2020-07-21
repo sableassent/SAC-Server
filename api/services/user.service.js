@@ -21,7 +21,7 @@ exports.findById = async function (_id) {
 
 exports.findByReferralCode = async function (referralCode) {
     let user = await User.findOne({
-        where: {referralCode: referralCode },
+        where: { referralCode: referralCode },
     });
     return user || null;
 };
@@ -87,6 +87,10 @@ exports.userCreate = async function (obj) {
     if (!obj.password) throw Error("Password is required.");
     if (!(await utils.isEmail(obj.email)))
         throw Error("Provide valid email address.");
+    let user = await module.exports.findByEmail(obj.email);
+    if (user) {
+        throw Error("User Exists!");
+    }
     let _id = utils.getUid(92, "alphaNumeric");
     let passwordHash = module.exports.createPasswordHash(obj.password);
     let referralCode = obj.name.substring(0, 4);
@@ -152,49 +156,93 @@ exports.addWalletAddress = async function (obj, user) {
     );
 };
 
-exports.addReferral = async function (obj, user) {
+exports.addReferral = async function (obj) {
     if (!obj.toemail) throw Error("ToEmail is required.");
     if (!obj.referralCode) throw Error("Referral Code is required.");
     let fromuser = await module.exports.findByReferralCode(obj.referralCode);
     if (!fromuser) throw Error("Invalid Referral Code!");
     let touser = await module.exports.findByEmail(obj.toemail);
-    if (!toemail) throw Error("User Does not Exist!");
+    if (!touser) throw Error("User Does not Exist!");
 
-    let status = "Both Verification Pending!";
-    let completedAt;
-    if (fromuser.phoneNumberVerified && touser.phoneNumberVerified) {
-        status = "Verification Done."
-        completedAt = new Date();
+    try {
+        let _id = utils.getUid(92, "alphaNumeric");
+        let status = "Both Verification Pending!";
+        let completedAt;
+        if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 1) {
+            status = "Verification Done."
+            completedAt = new Date();
+            await Referral.create(
+                {
+                    _id: _id,
+                    from: fromuser._id,
+                    to: touser._id,
+                    referralCode: obj.referralCode,
+                    status: status,
+                    completedAt: completedAt,
+                }
+            );
+            return status;
+        }
+        else if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 0) {
+            status = "New User Verification Pending";
+        }
+        else if (fromuser.phoneNumberVerified == 0 && touser.phoneNumberVerified == 1) {
+            status = "Referred User Verification Pending"
+        }
+
         await Referral.create(
             {
+                _id: _id,
                 from: fromuser._id,
                 to: touser._id,
                 referralCode: obj.referralCode,
                 status: status,
-                create: referralCode,
-                completedAt: completedAt,
             }
         );
         return status;
+    } catch (error) {
+        throw Error("Referral Already Exists!");
     }
-    else if(fromuser.phoneNumberVerified && !touser.phoneNumberVerified){
-        status = "New User Verification Pending";
-    }
-    else if(!fromuser.phoneNumberVerified && touser.phoneNumberVerified){
-        status = "Referred User Verification Pending"
-    }
+};
 
-    await Referral.create(
-        {
-            from: fromuser._id,
-            to: touser._id,
-            referralCode: obj.referralCode,
-            status: status,
-            create: referralCode,
-            completedAt: completedAt,
+exports.referralStatusUpdate = async function (obj) {
+    if (!obj.toemail) throw Error("ToEmail is required.");
+    if (!obj.referralCode) throw Error("Referral Code is required.");
+    let fromuser = await module.exports.findByReferralCode(obj.referralCode);
+    if (!fromuser) throw Error("Invalid Referral Code!");
+    let touser = await module.exports.findByEmail(obj.toemail);
+    if (!touser) throw Error("User Does not Exist!");
+
+    try {
+        let status = "Both Verification Pending!";
+        let completedAt;
+        if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 1) {
+            status = "Verification Done."
+            completedAt = new Date();
+            await Referral.update(
+                {
+                    status: status,
+                    completedAt: completedAt,
+                }
+            );
+            return status;
         }
-    );
-    return status;
+        else if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 0) {
+            status = "New User Verification Pending";
+        }
+        else if (fromuser.phoneNumberVerified == 0 && touser.phoneNumberVerified == 1) {
+            status = "Referred User Verification Pending"
+        }
+
+        await Referral.update(
+            {
+                status: status,
+            }
+        );
+        return status;
+    } catch (error) {
+        throw Error("Referral Status Update Failed!");
+    }
 };
 
 exports.userLogout = async function (token) {
@@ -209,10 +257,10 @@ exports.sendOTP = async function (obj) {
 
     let otp = utils.getUid(4, "numeric");
     client.messages.create({
-            body: "Your OTP is " + otp,
-            from: "+13343263230",
-            to: user.phoneNumber,
-        })
+        body: "Your OTP is " + otp,
+        from: "+13343263230",
+        to: user.phoneNumber,
+    })
         .then(async () => {
             await OTPMobile.create({
                 _id: _id,

@@ -120,6 +120,15 @@ exports.addReferral = async function (req, res, next) {
     }
 }
 
+exports.referralStatusUpdate = async function (req, res, next) {
+    try {
+        const response = await UserService.referralStatusUpdate(req.body);
+        return res.status(200).send(response);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
 exports.sendOTP = async function (req, res, next) {
     try {
         await UserService.sendOTP(req.body);

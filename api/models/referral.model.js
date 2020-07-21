@@ -8,11 +8,12 @@ module.exports = function (sequelize, DataTypes) {
         },
         from: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: false,
         },
         to: {
             type: DataTypes.STRING(256),
-            allowNull: false
+            allowNull: false,
+            primaryKey: true
         },
         referralCode: {
             type: DataTypes.STRING(256),
