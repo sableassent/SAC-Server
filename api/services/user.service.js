@@ -7,9 +7,7 @@ const Referral = require("../models").Referral;
 const UserAccessToken = require("../models").UserAccessToken;
 const Sequelize = require("sequelize");
 
-const accountSid = "ACa95d82a9a54d44be64f20af6e8b865ed";
-const authToken = "f59b131e9c718b0ee58e66bdebfafcfc";
-const client = require("twilio")(accountSid, authToken);
+const client = require("twilio")(process.env.ACCOUNTSID, process.env.AUTHTOKEN);
 const otpExpiryTimeMinutes = 15;
 const Op = Sequelize.Op;
 
