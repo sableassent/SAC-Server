@@ -264,7 +264,7 @@ exports.referralStatusUpdate = async function (obj) {
 
 exports.getAllReferrals = async function (obj) {
     if (!obj.referralCode) throw Error("Referral Code is required.");
-    let referrals = await Referral.findAll({
+    let referrals = await Referral.count({
         where: { referralCode: obj.referralCode },
     });
 
