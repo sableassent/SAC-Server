@@ -53,6 +53,8 @@ services:
       - SAC1_ADDRESS=${SAC1_ADDRESS}
       - INFURA_API_ENDPOINT=${INFURA_API_ENDPOINT}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - TWILIO_ACCOUNTSID=${TWILIO_ACCOUNTSID}
+      - TWILIO_AUTHTOKEN=${TWILIO_AUTHTOKEN}
     command: sh -c "node app.js"
     restart: always
     ports:
