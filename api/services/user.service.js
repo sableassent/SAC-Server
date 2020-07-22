@@ -246,6 +246,19 @@ exports.referralStatusUpdate = async function (obj) {
     }
 };
 
+exports.getAllReferrals = async function (obj) {
+    if (!obj.referralCode) throw Error("Referral Code is required.");
+    let referrals = await Referral.findAll({ where: { referralCode: obj.referralCode } });
+
+    if (referrals) {
+        return referrals;
+    }
+    else {
+        throw Error("No Referrals Found!")
+    }
+
+};
+
 exports.userLogout = async function (token) {
     await UserAccessToken.update({ isActive: false }, { where: { _id: token } });
 };

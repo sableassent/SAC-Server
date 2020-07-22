@@ -129,6 +129,17 @@ exports.referralStatusUpdate = async function (req, res, next) {
     }
 }
 
+exports.getAllReferrals = async function (req, res, next) {
+    try {
+        let referrals = await UserService.getAllReferrals(req.body);
+        return res.status(200).json({
+            referrals: referrals
+        });
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
 exports.sendOTP = async function (req, res, next) {
     try {
         await UserService.sendOTP(req.body);

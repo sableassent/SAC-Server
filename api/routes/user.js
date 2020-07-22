@@ -18,5 +18,5 @@ router.post('/addWalletAddress', UserController.verifyToken, UserController.addW
 router.post('/sendOTP', UserController.verifyToken,  UserController.sendOTP);
 router.post('/verifyOTP', UserController.verifyToken, UserController.verifyOTP);
 router.post('/referralStatusUpdate', UserController.verifyToken, UserController.referralStatusUpdate);
-
+router.post('/getAllReferrals', UserController.verifyToken, UserController.getAllReferrals);
 module.exports = router;
