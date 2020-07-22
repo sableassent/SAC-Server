@@ -1,5 +1,6 @@
 const AdminService = require('../services/admin.service');
 const EthereumService = require('../services/ethereum.service');
+const passwordUtils = require("../utils/passwordUtils")
 
 exports.create = async function (req, res, next) {
     try {
@@ -25,24 +26,7 @@ exports.login = async function (req, res, next) {
     }
 }
 
-exports.verifyToken = async function (req, res, next) {
-    try {
-        if (!req.headers['authorization']) {
-            return res.sendStatus(401);
-        }
-        let [scheme, token] = req.headers['authorization'].toString().split(' ');
-        if (!scheme || !token) {
-            return res.sendStatus(401);
-        }
-        if (scheme.toLowerCase() != 'bearer') {
-            return res.sendStatus(401);
-        }
-        req.admin = await AdminService.findByAccessToken(token);
-        next();
-    } catch (e) {
-        return res.sendStatus(401);
-    }
-}
+exports.verifyToken = passwordUtils.verifyToken(AdminService);
 
 exports.me = async function (req, res, next) {
     try {
@@ -52,7 +36,7 @@ exports.me = async function (req, res, next) {
         let totalTransaction = await EthereumService.findAndCountAllTransaction({});
         const todayStartDate = new Date().setHours(0, 0, 0);
         const todayEndDate = new Date().setHours(23, 59, 59);
-        let match = { where: { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } } };
+        let match = { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } };
         let todayTotalTransaction = await EthereumService.findAndCountAllTransaction(match);
         return res.status(200).json({
             admin: admin,

@@ -3,7 +3,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 const http = require('http');
-const sequelize = require('./sequelize');
 const EthereumService = require('./services/ethereum.service');
 const mongo = require('./mongo');
 

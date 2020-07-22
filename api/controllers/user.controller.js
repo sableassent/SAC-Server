@@ -1,6 +1,8 @@
 const UserService = require('../services/user.service');
 const EthereumService = require('../services/ethereum.service');
 const PasswordResetService = require('../services/passwordReset.service');
+const passwordUtils = require("../utils/passwordUtils");
+
 
 exports.userCreate = async function (req, res, next) {
     try {
@@ -26,24 +28,8 @@ exports.userLogin = async function (req, res, next) {
     }
 }
 
-exports.verifyToken = async function (req, res, next) {
-    try {
-        if (!req.headers['authorization']) {
-            return res.sendStatus(401);
-        }
-        let [scheme, token] = req.headers['authorization'].toString().split(' ');
-        if (!scheme || !token) {
-            return res.sendStatus(401);
-        }
-        if (scheme.toLowerCase() != 'bearer') {
-            return res.sendStatus(401);
-        }
-        req.user = await UserService.findByAccessToken(token);
-        next();
-    } catch (e) {
-        return res.sendStatus(401);
-    }
-}
+exports.verifyToken = passwordUtils.verifyToken(UserService);
+
 
 exports.userMe = async function (req, res, next) {
     try {
@@ -52,7 +38,7 @@ exports.userMe = async function (req, res, next) {
         let totalTransaction = await EthereumService.findAndCountAllTransaction({});
         const todayStartDate = new Date().setHours(0, 0, 0);
         const todayEndDate = new Date().setHours(23, 59, 59);
-        let match = { where: { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } } };
+        let match = { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } };
         let todayTotalTransaction = await EthereumService.findAndCountAllTransaction(match);
         return res.status(200).json({
             user: user,
@@ -151,7 +137,7 @@ exports.getAllReferrals = async function (req, res, next) {
 
 exports.sendOTP = async function (req, res, next) {
     try {
-        await UserService.sendOTP(req.body);
+        await UserService.sendOTP(req.body, req.user);
         return res.status(200).send('OTP sent successfully.');
     } catch (e) {
         return res.status(500).send(e.message);
@@ -160,7 +146,7 @@ exports.sendOTP = async function (req, res, next) {
 
 exports.verifyOTP = async function (req, res, next) {
     try {
-        await UserService.verifyOTP(req.body);
+        await UserService.verifyOTP(req.body, req.user);
         return res.status(200).send('OTP verified successfully.');
     } catch (e) {
         return res.status(500).send(e.message);

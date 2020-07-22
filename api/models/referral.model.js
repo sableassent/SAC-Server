@@ -24,15 +24,16 @@ const ReferralSchema = new mongoose.Schema(
         },
         transactionHash: {
             type: String,
-            allowNull: true
+            required: false
         },
         createdAt: {
             type: Date,
             required: true,
+            default: Date.now
         },
         completedAt: {
             type: Date,
-            allowNull: true,
+            required: false,
         },
     },
     {

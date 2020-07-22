@@ -38,27 +38,40 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        accessToken: {
+            token: {
+                type: String,
+            },
+            isActive: {
+                type: Boolean,
+                default: false
+            }
+        },
         phoneNumberVerification: {
             otp: {
                 type: String,
-                required: true
             },
             createdAt: {
-                type: Date,
-                required: true,
+                type: Date
             },
-            isVerified: Boolean
+            isVerified: {
+                type:Boolean,
+                required: true,
+                default: false
+            }
         },
         emailVerification: {
             otp: {
                 type: String,
-                required: true
             },
             createdAt: {
                 type: Date,
-                required: true,
             },
-            isVerified: Boolean
+            isVerified: {
+                type:Boolean,
+                required: true,
+                default: false
+            }
         }
     },
     {

@@ -1,7 +1,7 @@
 const UserService = require('./user.service');
 const utils = require('../utils');
 const emailUtils = require("../utils/emailUtils")
-const PasswordReset = require('../models').PasswordReset;
+const PasswordReset = require("../models/passwordReset.model");
 
 const otpExpiryTimeMinutes = 15;
 
@@ -14,7 +14,7 @@ exports.findByEmail = async function (email) {
     if (!email) throw Error("Email not present");
     if (!await utils.isEmail(email)) throw Error("Invalid email format");
     const passwordResetToken = await PasswordReset.findOne({
-        where: { userEmail: email }
+        userEmail: email
     });
     return passwordResetToken || null;
 }
@@ -22,7 +22,7 @@ exports.findByEmail = async function (email) {
 exports.deleteByEmail = async function (email) {
     if (!email) throw Error("Email not present");
     if (!await utils.isEmail(email)) throw Error("Invalid email format");
-    return PasswordReset.destroy({ where: { userEmail: email } });
+    return PasswordReset.deleteOne({userEmail: email });
 }
 
 /**
@@ -45,11 +45,12 @@ exports.userNewPassword = async function (obj) {
     const createdAt = passwordResetToken.createdAt;
 
     // Add minutes to get time of expiry
-    createdAt.setDate(createdAt.getMinutes() + otpExpiryTimeMinutes);
-    const currentTime = new Date();
+    // createdAt.setDate(createdAt.getMinutes() + otpExpiryTimeMinutes);
+    const expiryDate = createdAt.getTime() + (otpExpiryTimeMinutes * 60 * 1000);
+    const currentTime = new Date().getTime();
 
     // check if expiry time is greater than currentTime
-    if (createdAt > currentTime) {
+    if (expiryDate > currentTime) {
 
         const { otp: sentOTP } = passwordResetToken;
 
@@ -85,15 +86,15 @@ exports.userResetPassword = async function (obj) {
     const previousResetToken = await module.exports.findByEmail(email);
     // delete previous token if present
     if (previousResetToken) {
-        await PasswordReset.destroy({ where: { userEmail: email } })
+        await PasswordReset.deleteOne({ userEmail: email })
     }
     const otp = utils.getUid(6, 'numeric');
-
-    await PasswordReset.create({
+    const passwordResetToken = new PasswordReset({
         userEmail: user.email,
         otp: otp,
-    },
-    );
+    });
+
+    await passwordResetToken.save();
 
     emailUtils.sendPasswordResetMailSG(user, email, otp, function (error, response, body) {
         if (error) console.log("Error sending email: ${error}")

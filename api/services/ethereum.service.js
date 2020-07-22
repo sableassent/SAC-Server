@@ -2,8 +2,8 @@ const fs = require('fs');
 const dateFormat = require('dateformat');
 const utils = require('../utils');
 const aes256 = require('aes256');
-const Wallet = require('../models').Wallet;
-const Transaction = require('../models').Transaction;
+const Wallet = require('../models/wallet.model');
+const Transaction = require('../models/transaction.model');
 const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_ENDPOINT));
 
@@ -18,8 +18,7 @@ exports.findAndCountAllTransaction = async function (match) {
 }
 
 exports.isActivated = async function () {
-    if (!web3.eth.accounts.wallet['0']) return false;
-    return true;
+    return web3.eth.accounts.wallet['0'];
 }
 
 exports.activate = async function (obj) {

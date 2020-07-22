@@ -9,3 +9,25 @@ module.exports.verifyPassword = function (user, password) {
     let passwordHash = process.env.PASSWORD_SALT + md5(password);
     return twinBcrypt.compareSync(passwordHash, user.password);
 };
+
+module.exports.verifyToken = function (A) {
+    return async function (req, res, next) {
+        console.log(req.headers);
+        try {
+            if (!req.headers['authorization']) {
+                return res.sendStatus(401);
+            }
+            let [scheme, token] = req.headers['authorization'].toString().split(' ');
+            if (!scheme || !token) {
+                return res.sendStatus(401);
+            }
+            if (scheme.toLowerCase() != 'bearer') {
+                return res.sendStatus(401);
+            }
+            req.user = await A.findByAccessToken(token);
+            next();
+        } catch (e) {
+            return res.status(401).send(e.message);
+        }
+    }
+}

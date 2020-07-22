@@ -14,7 +14,7 @@ const PasswordResetSchema = new mongoose.Schema(
         createdAt: {
             type: Date,
             required: true,
-            defaultValue: Sequelize.NOW
+            default: Date.now
         }
     },
     {

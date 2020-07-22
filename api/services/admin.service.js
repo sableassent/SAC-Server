@@ -2,16 +2,7 @@ const utils = require('../utils');
 const twinBcrypt = require('twin-bcrypt');
 const md5 = require('md5');
 const Admin = require("../models/admin.model")
-const EthereumService = require('../services/ethereum.service');
 
-// exports.findById = async function (_id) {
-//     let admin = await Admin.findOne({
-//         attributes: [
-//             '_id', 'name', 'email'
-//         ], where: { _id: _id }
-//     });
-//     return admin || null;
-// }
 
 exports.findByEmail = async function (email) {
     let admin = await Admin.findOne({email: email });
@@ -19,7 +10,7 @@ exports.findByEmail = async function (email) {
 }
 
 exports.findByAccessToken = async function (token) {
-    let user = await Admin.findOne({ where: { 'accessToken.token': token } });
+    let user = await Admin.findOne({ 'accessToken.token': token });
     if (!user) throw Error('Invalid access token.');
     if (!user.accessToken.isActive) throw Error('Access token expired.');
     return user;
@@ -76,20 +67,16 @@ exports.create = async function (obj) {
 exports.changePassword = async function (obj, admin) {
     if (!obj.newPassword) throw Error('New password is required.');
     if (!obj.oldPassword) throw Error('Old password is required.');
-    if (obj.oldPassword == obj.newPassword) throw Error('Old password and new password should not be same.');
+    if (obj.oldPassword === obj.newPassword) throw Error('Old password and new password should not be same.');
     if (!module.exports.verifyPassword(admin, obj.oldPassword)) throw Error('Wrong old password, please try again.');
-    let passwordHash = module.exports.createPasswordHash(obj.newPassword);
-    await Admin.updateOne({ password: passwordHash }, {
-        where: {
-            _id: admin._id
-        }
-    });
+    admin.password = module.exports.createPasswordHash(obj.newPassword);
+    await admin.save();
 }
 
 exports.resetPassword = async function (obj, admin) {
     //Node Mailer
 }
 
-exports.logout = async function (token) {
-    await AdminAccessToken.update({ isActive: false }, { where: { _id: token } });
-}
+exports.userLogout = async function (token) {
+    await Admin.updateOne({ 'accessToken.token' : token },{ 'accessToken.isActive': false });
+};
