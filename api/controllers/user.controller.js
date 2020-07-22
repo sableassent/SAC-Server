@@ -111,6 +111,15 @@ exports.userLogout = async function (req, res, next) {
     }
 }
 
+exports.checkReferralCode = async function (req, res, next) {
+    try {
+        const response = await UserService.checkReferralCode(req.body);
+        return res.status(200).send(response);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
 exports.addReferral = async function (req, res, next) {
     try {
         const response = await UserService.addReferral(req.body);
@@ -153,6 +162,17 @@ exports.verifyOTP = async function (req, res, next) {
     try {
         await UserService.verifyOTP(req.body);
         return res.status(200).send('OTP verified successfully.');
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.getAllUsers = async function (req, res, next) {
+    try {
+        let users = await UserService.getAllUsers(req.body);
+        return res.status(200).json({
+            users: users
+        });
     } catch (e) {
         return res.status(500).send(e.message);
     }

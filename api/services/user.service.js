@@ -5,15 +5,26 @@ const User = require("../models").User;
 const OTPMobile = require("../models").OTPMobile;
 const Referral = require("../models").Referral;
 const UserAccessToken = require("../models").UserAccessToken;
+const Sequelize = require("sequelize");
 
 const accountSid = "ACa95d82a9a54d44be64f20af6e8b865ed";
 const authToken = "f59b131e9c718b0ee58e66bdebfafcfc";
 const client = require("twilio")(accountSid, authToken);
 const otpExpiryTimeMinutes = 15;
+const Op = Sequelize.Op;
 
 exports.findById = async function (_id) {
     let user = await User.findOne({
-        attributes: ["_id", "name", "username", "email", "phoneNumber", "walletAddress", "referralCode", "phoneNumberVerified"],
+        attributes: [
+            "_id",
+            "name",
+            "username",
+            "email",
+            "phoneNumber",
+            "walletAddress",
+            "referralCode",
+            "phoneNumberVerified",
+        ],
         where: { _id: _id },
     });
     return user || null;
@@ -157,49 +168,54 @@ exports.addWalletAddress = async function (obj, user) {
     );
 };
 
+exports.checkReferralCode = async function (obj, user) {
+    if (!obj.referralCode) throw Error("Referral Code is required.");
+    let fromuser = await module.exports.findByReferralCode(obj.referralCode);
+    if (!fromuser) throw Error("Invalid Referral Code!");
+    return true;
+};
+
 exports.addReferral = async function (obj) {
     if (!obj.toemail) throw Error("ToEmail is required.");
     if (!obj.referralCode) throw Error("Referral Code is required.");
     let fromuser = await module.exports.findByReferralCode(obj.referralCode);
-    if (!fromuser) throw Error("Invalid Referral Code!");
     let touser = await module.exports.findByEmail(obj.toemail);
-    if (!touser) throw Error("User Does not Exist!");
 
     try {
         let _id = utils.getUid(92, "alphaNumeric");
         let status = "Both Verification Pending!";
         let completedAt;
         if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 1) {
-            status = "Verification Done."
+            status = "Verification Done.";
             completedAt = new Date();
-            await Referral.create(
-                {
-                    _id: _id,
-                    from: fromuser._id,
-                    to: touser._id,
-                    referralCode: obj.referralCode,
-                    status: status,
-                    completedAt: completedAt,
-                }
-            );
-            return status;
-        }
-        else if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 0) {
-            status = "New User Verification Pending";
-        }
-        else if (fromuser.phoneNumberVerified == 0 && touser.phoneNumberVerified == 1) {
-            status = "Referred User Verification Pending"
-        }
-
-        await Referral.create(
-            {
+            await Referral.create({
                 _id: _id,
                 from: fromuser._id,
                 to: touser._id,
                 referralCode: obj.referralCode,
                 status: status,
-            }
-        );
+                completedAt: completedAt,
+            });
+            return status;
+        } else if (
+            fromuser.phoneNumberVerified == 1 &&
+            touser.phoneNumberVerified == 0
+        ) {
+            status = "New User Verification Pending";
+        } else if (
+            fromuser.phoneNumberVerified == 0 &&
+            touser.phoneNumberVerified == 1
+        ) {
+            status = "Referred User Verification Pending";
+        }
+
+        await Referral.create({
+            _id: _id,
+            from: fromuser._id,
+            to: touser._id,
+            referralCode: obj.referralCode,
+            status: status,
+        });
         return status;
     } catch (error) {
         throw Error("Referral Already Exists!");
@@ -218,28 +234,28 @@ exports.referralStatusUpdate = async function (obj) {
         let status = "Both Verification Pending!";
         let completedAt;
         if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 1) {
-            status = "Verification Done."
+            status = "Verification Done.";
             completedAt = new Date();
-            await Referral.update(
-                {
-                    status: status,
-                    completedAt: completedAt,
-                }
-            );
+            await Referral.update({
+                status: status,
+                completedAt: completedAt,
+            });
             return status;
-        }
-        else if (fromuser.phoneNumberVerified == 1 && touser.phoneNumberVerified == 0) {
+        } else if (
+            fromuser.phoneNumberVerified == 1 &&
+            touser.phoneNumberVerified == 0
+        ) {
             status = "New User Verification Pending";
-        }
-        else if (fromuser.phoneNumberVerified == 0 && touser.phoneNumberVerified == 1) {
-            status = "Referred User Verification Pending"
+        } else if (
+            fromuser.phoneNumberVerified == 0 &&
+            touser.phoneNumberVerified == 1
+        ) {
+            status = "Referred User Verification Pending";
         }
 
-        await Referral.update(
-            {
-                status: status,
-            }
-        );
+        await Referral.update({
+            status: status,
+        });
         return status;
     } catch (error) {
         throw Error("Referral Status Update Failed!");
@@ -248,15 +264,15 @@ exports.referralStatusUpdate = async function (obj) {
 
 exports.getAllReferrals = async function (obj) {
     if (!obj.referralCode) throw Error("Referral Code is required.");
-    let referrals = await Referral.findAll({ where: { referralCode: obj.referralCode } });
+    let referrals = await Referral.findAll({
+        where: { referralCode: obj.referralCode },
+    });
 
     if (referrals) {
         return referrals;
+    } else {
+        throw Error("No Referrals Found!");
     }
-    else {
-        throw Error("No Referrals Found!")
-    }
-
 };
 
 exports.userLogout = async function (token) {
@@ -270,11 +286,12 @@ exports.sendOTP = async function (obj) {
     let _id = utils.getUid(92, "alphaNumeric");
 
     let otp = utils.getUid(4, "numeric");
-    client.messages.create({
-        body: "Your OTP is " + otp,
-        from: "+13343263230",
-        to: user.phoneNumber,
-    })
+    client.messages
+        .create({
+            body: "Your OTP is " + otp,
+            from: "+13343263230",
+            to: user.phoneNumber,
+        })
         .then(async () => {
             await OTPMobile.create({
                 _id: _id,
@@ -282,9 +299,10 @@ exports.sendOTP = async function (obj) {
                 phoneNumber: user.phoneNumber,
                 otp: otp,
             });
-        }).catch((error) => {
-            console.error(error);
         })
+        .catch((error) => {
+            console.error(error);
+        });
 };
 
 exports.verifyOTP = async function (obj) {
@@ -308,26 +326,35 @@ exports.verifyOTP = async function (obj) {
                 {
                     where: {
                         _id: usermodel._id,
-                    }
+                    },
                 }
             );
             await OTPMobile.destroy({
                 where: {
-                    phoneNumber: obj.phoneNumber
-                }
-            })
+                    phoneNumber: obj.phoneNumber,
+                },
+            });
+        } else {
+            throw Error("Incorrect OTP!");
         }
-        else {
-            throw Error("Incorrect OTP!")
-        }
-    }
-    else {
+    } else {
         await OTPMobile.destroy({
             where: {
-                phoneNumber: obj.phoneNumber
-            }
-        })
+                phoneNumber: obj.phoneNumber,
+            },
+        });
         throw Error("OTP Expired!");
     }
+};
 
+exports.getAllUsers = async function (obj) {
+    if (!obj.email) throw Error("Email is required.");
+    //Fetching All user with walletAddress not null except the current user
+    let users = await User.findAll({ where: { [Op.and]: [{ email: { [Op.not]: obj.email } }, { walletAddress: { [Op.not]: null } }]}});
+
+    if (users) {
+        return users;
+    } else {
+        throw Error("No Users Found!");
+    }
 };
