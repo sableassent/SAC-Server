@@ -222,11 +222,11 @@ exports.addReferral = async function (obj) {
 
 exports.referralStatusUpdate = async function (obj) {
     if (!obj.toemail) throw Error("ToEmail is required.");
-    if (!obj.referralCode) throw Error("Referral Code is required.");
-    let fromuser = await module.exports.findByReferralCode(obj.referralCode);
-    if (!fromuser) throw Error("Invalid Referral Code!");
     let touser = await module.exports.findByEmail(obj.toemail);
     if (!touser) throw Error("User Does not Exist!");
+    let referral = await Referral.findOne({ where: { to: touser._id } });
+    let fromuser = await module.exports.findByReferralCode(referral.referralCode);
+    if (!fromuser) throw Error("Invalid Referral Code!");
 
     try {
         let status = "Both Verification Pending!";
