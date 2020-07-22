@@ -1,47 +1,78 @@
-module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('User', {
+const mongoose = require("mongoose");
+const validators = require("../mongoValidators");
+const UserSchema = new mongoose.Schema(
+    {
         _id: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
+            type: String,
+            required: true,
             primaryKey: true
         },
         name: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         username: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
+            type: String,
+            required: true,
             unique: true,
         },
         email: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
+            type: String,
+            required: true,
             unique: true,
         },
         phoneNumber: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
+            type: String,
+            required: true,
             unique: true,
         },
         password: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         walletAddress: {
-            type: DataTypes.STRING(256),
+            type: String,
             allowNull: true
         },
         referralCode: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
-        phoneNumberVerified: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            defaultValue: false
+        phoneNumberVerification: {
+            otp: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                required: true,
+            },
+            isVerified: Boolean
         },
-    }, {
-        tableName: 'User'
-    });
-};
+        emailVerification: {
+            otp: {
+                type: String,
+                required: true
+            },
+            createdAt: {
+                type: Date,
+                required: true,
+            },
+            isVerified: Boolean
+        }
+    },
+    {
+        timestamps: true,
+        minimize: false,
+        versionKey: false
+    }
+)
+
+UserSchema.index({ accessToken: -1 });
+UserSchema.index({ email: -1 });
+
+// Handler **must** take 3 parameters: the error that occurred, the document
+// in question, and the `next()` function
+UserSchema.post('save', validators.duplicateKey);
+
+module.exports = mongoose.model('Users', UserSchema);

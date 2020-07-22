@@ -19,13 +19,12 @@ exports.findByEmail = async function (email) {
 }
 
 exports.findByAccessToken = async function (token) {
-    let adminAccessToken = await Admin.findOne({ where: { 'accessToken.token': token } });
-    if (!adminAccessToken) throw Error('Invalid access token.');
-    if (!adminAccessToken.isActive) throw Error('Access token expired.');
-    let admin = await Admin.findOne({ where: { _id: adminAccessToken.adminId } });
-    if (!admin) throw Error('Invalid admin.');
-    return admin;
+    let user = await Admin.findOne({ where: { 'accessToken.token': token } });
+    if (!user) throw Error('Invalid access token.');
+    if (!user.accessToken.isActive) throw Error('Access token expired.');
+    return user;
 }
+
 
 exports.createPasswordHash = function (password) {
     return twinBcrypt.hashSync(process.env.PASSWORD_SALT + md5(password));

@@ -1,74 +1,34 @@
 const utils = require("../utils");
 const twinBcrypt = require("twin-bcrypt");
 const md5 = require("md5");
-const User = require("../models").User;
-const OTPMobile = require("../models").OTPMobile;
-const Referral = require("../models").Referral;
-const UserAccessToken = require("../models").UserAccessToken;
-const Sequelize = require("sequelize");
-
+const User = require("../models/user.model");
 const client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
 const otpExpiryTimeMinutes = 15;
-const Op = Sequelize.Op;
-
-exports.findById = async function (_id) {
-    let user = await User.findOne({
-        attributes: [
-            "_id",
-            "name",
-            "username",
-            "email",
-            "phoneNumber",
-            "walletAddress",
-            "referralCode",
-            "phoneNumberVerified",
-        ],
-        where: { _id: _id },
-    });
-    return user || null;
-};
+const passwordUtils = require("../utils/passwordUtils")
 
 exports.findByReferralCode = async function (referralCode) {
-    let user = await User.findOne({
-        where: { referralCode: referralCode },
-    });
+    let user = await User.findOne({ referralCode: referralCode });
     return user || null;
 };
 
 exports.findByAccessToken = async function (token) {
-    let userAccessToken = await UserAccessToken.findOne({
-        where: { _id: token },
-    });
-    if (!userAccessToken) throw Error("Invalid access token.");
-    if (!userAccessToken.isActive) throw Error("Access token expired.");
-    let user = await User.findOne({ where: { _id: userAccessToken.userId } });
-    if (!user) throw Error("Invalid user.");
+    let user = await User.findOne({ where: { 'accessToken.token': token } });
+    if (!user) throw Error('Invalid access token.');
+    if (!user.accessToken.isActive) throw Error('Access token expired.');
     return user;
-};
+}
+
 
 exports.findByEmail = async function (email) {
-    let user = await User.findOne({ where: { email: email } });
+    let user = await User.findOne({ email: email });
     return user || null;
 };
 
 exports.findByPhoneNumber = async function (phoneNumber) {
-    let user = await User.findOne({ where: { phoneNumber: phoneNumber } });
+    let user = await User.findOne({ phoneNumber: phoneNumber });
     return user || null;
 };
 
-exports.findByPhoneNumberinOTP = async function (phoneNumber) {
-    let user = await OTPMobile.findOne({ where: { phoneNumber: phoneNumber } });
-    return user || null;
-};
-
-exports.createPasswordHash = function (password) {
-    return twinBcrypt.hashSync(process.env.PASSWORD_SALT + md5(password));
-};
-
-exports.verifyPassword = function (user, password) {
-    let passwordHash = process.env.PASSWORD_SALT + md5(password);
-    return twinBcrypt.compareSync(passwordHash, user.password);
-};
 
 exports.userLogin = async function (obj) {
     if (!obj.email) throw Error("Email is required.");
@@ -77,15 +37,11 @@ exports.userLogin = async function (obj) {
         throw Error("Provide valid email address.");
     let user = await module.exports.findByEmail(obj.email);
     if (!user) throw Error("Invalid credentials.");
-    if (!(await module.exports.verifyPassword(user, obj.password)))
+    if (!(await passwordUtils.verifyPassword(user, obj.password)))
         throw Error("Invalid credentials.");
     let userAccessToken = utils.getUid(92, "alphaNumeric");
-    await UserAccessToken.create({
-        _id: userAccessToken,
-        userId: user._id,
-        isActive: true,
-    });
-    user = await module.exports.findById(user._id);
+    user.accessToken.token = userAccessToken;
+    user.save();
     return [userAccessToken, user];
 };
 
@@ -97,73 +53,50 @@ exports.userCreate = async function (obj) {
     if (!obj.password) throw Error("Password is required.");
     if (!(await utils.isEmail(obj.email)))
         throw Error("Provide valid email address.");
-    let user = await module.exports.findByEmail(obj.email);
-    if (user) {
-        throw Error("User Exists!");
-    }
     let _id = utils.getUid(92, "alphaNumeric");
-    let passwordHash = module.exports.createPasswordHash(obj.password);
+    let passwordHash = passwordUtils.createPasswordHash(obj.password);
     let referralCode = obj.name.substring(0, 4);
     referralCode += utils.getUid(4, "alphaNumeric");
-    await User.create(
-        {
-            _id: _id,
-            name: obj.name,
-            username: obj.username,
-            email: obj.email,
-            phoneNumber: obj.phoneNumber,
-            password: passwordHash,
-            referralCode: referralCode,
-            phoneNumberVerified: false,
-        },
-        {
-            fields: [
-                "_id",
-                "name",
-                "username",
-                "email",
-                "phoneNumber",
-                "password",
-                "referralCode",
-                "phoneNumberVerified",
-            ],
-        }
-    );
+
+    const user = new User({
+        _id: _id,
+        name: obj.name,
+        username: obj.username,
+        email: obj.email,
+        phoneNumber: obj.phoneNumber,
+        password: passwordHash,
+        referralCode: referralCode,
+        phoneNumberVerified: false,
+    })
+    await user.save();
+
+
+
     return _id;
 };
 
 exports.userChangePasswordFn = async function (newPassword, user) {
-    let passwordHash = module.exports.createPasswordHash(newPassword);
-    await User.update(
-        { password: passwordHash },
-        {
-            where: {
-                _id: user._id,
-            },
-        }
-    );
+    let passwordHash = passwordUtils.createPasswordHash(newPassword);
+    // const user = User.findOne({_id: user._id});
+    user.password = passwordHash;
+    user.save();
 };
 
 exports.userChangePassword = async function (obj, user) {
     if (!obj.newPassword) throw Error("New password is required.");
     if (!obj.oldPassword) throw Error("Old password is required.");
-    if (obj.oldPassword == obj.newPassword)
+    if (obj.oldPassword === obj.newPassword)
         throw Error("Old password and new password should not be same.");
-    if (!module.exports.verifyPassword(user, obj.oldPassword))
+    if (!passwordUtils.verifyPassword(user, obj.oldPassword))
         throw Error("Wrong old password, please try again.");
     await module.exports.userChangePasswordFn(obj.newPassword, user);
 };
 
 exports.addWalletAddress = async function (obj, user) {
-    if (!obj.walletAddress) throw Error("Wallet Address is required.");
-    await User.update(
-        { walletAddress: obj.walletAddress },
-        {
-            where: {
-                _id: user._id,
-            },
-        }
-    );
+    const {walletAddress} = obj;
+    if (!walletAddress) throw Error("Wallet Address is required.");
+    user.walletAddress = walletAddress;
+    await user.save();
 };
 
 exports.checkReferralCode = async function (obj, user) {

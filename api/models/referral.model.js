@@ -1,42 +1,50 @@
-const Sequelize = require("sequelize");
-module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('Referral', {
+const mongoose = require("mongoose");
+const validators = require("../mongoValidators");
+const ReferralSchema = new mongoose.Schema(
+    {
         _id: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            primaryKey: true
+            type: String,
+            required: true,
         },
         from: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
+            type: String,
+            required: true,
         },
         to: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            primaryKey: true
+            type: String,
+            required: true,
         },
         referralCode: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         status: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         transactionHash: {
-            type: DataTypes.STRING(256),
+            type: String,
             allowNull: true
         },
         createdAt: {
-            type: Sequelize.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
+            type: Date,
+            required: true,
         },
         completedAt: {
-            type: Sequelize.DATE,
+            type: Date,
             allowNull: true,
         },
-    }, {
-        tableName: 'Referral'
-    });
-};
+    },
+    {
+        timestamps: true,
+        minimize: false,
+        versionKey: false
+    }
+)
+
+
+// Handler **must** take 3 parameters: the error that occurred, the document
+// in question, and the `next()` function
+ReferralSchema.post('save', validators.duplicateKey);
+
+module.exports = mongoose.model('Referral', ReferralSchema);

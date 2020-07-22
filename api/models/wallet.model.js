@@ -1,31 +1,42 @@
-module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('Wallet', {
+
+const mongoose = require("mongoose");
+const validators = require("../mongoValidators");
+const WalletSchema = new mongoose.Schema(
+    {
         _id: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            primaryKey: true
+            type: String,
+            required: true,
         },
         privateKey: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         balanceETH: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         },
         balanceSAC: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         },
         fixedFees: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         },
         percentFees: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         }
-    }, {
-        tableName: 'Wallet'
-    });
-};
+    },
+    {
+        timestamps: true,
+        minimize: false,
+        versionKey: false
+    }
+);
+
+// Handler **must** take 3 parameters: the error that occurred, the document
+// in question, and the `next()` function
+WalletSchema.post('save', validators.duplicateKey);
+
+module.exports = mongoose.model('Wallet', WalletSchema);

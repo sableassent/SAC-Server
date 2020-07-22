@@ -1,51 +1,56 @@
-module.exports = function (sequelize, DataTypes) {
-    return sequelize.define('Transaction', {
+const mongoose = require("mongoose");
+const validators = require("../mongoValidators");
+const TransactionSchema = new mongoose.Schema(
+    {
         _id: {
-            type: DataTypes.STRING(256),
-            allowNull: false,
-            primaryKey: true
+            type: String,
+            required: true,
         },
         from: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         to: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         amount: {
-            type: DataTypes.STRING(256),
-            allowNull: true
+            type: String,
+            required: false
         },
         amountInFloat: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         },
         fees: {
-            type: DataTypes.STRING(256),
-            allowNull: true
+            type: String,
+            required: false
         },
         feesInFloat: {
-            type: DataTypes.DOUBLE,
-            allowNull: true
+            type: Number,
+            required: false
         },
         nonce: {
-            type: DataTypes.INTEGER.UNSIGNED.ZEROFILL,
-            allowNull: true
+            type: Number,
+            required: false
         },
         status: {
-            type: DataTypes.STRING(256),
-            allowNull: false
+            type: String,
+            required: true
         },
         updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
-        createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false
+            type: Date,
+            required: true
         }
-    }, {
-        tableName: 'Transaction'
-    });
-};
+    },
+    {
+        timestamps: true,
+        minimize: false,
+        versionKey: false
+    }
+)
+// Handler **must** take 3 parameters: the error that occurred, the document
+// in question, and the `next()` function
+TransactionSchema.post('save', validators.duplicateKey);
+
+module.exports = mongoose.model('Transaction', TransactionSchema);
