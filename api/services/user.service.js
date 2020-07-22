@@ -317,7 +317,6 @@ exports.verifyOTP = async function (obj) {
     // Add minutes to get time of expiry
     createdAt.setDate(createdAt.getMinutes() + otpExpiryTimeMinutes);
     const currentTime = new Date();
-
     // check if expiry time is greater than currentTime
     if (createdAt > currentTime) {
         if (user.otp == obj.otp) {

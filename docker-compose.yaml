@@ -19,6 +19,22 @@ services:
     networks:
       - main
 
+  mongo:
+    image: mongo
+    container_name: mongo
+    volumes:
+      - /opt/mongo:/data/db
+    ports:
+      - 27000:27000
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - main
+
+
+
   api:
     build: api
     container_name: api
@@ -29,6 +45,8 @@ services:
       - MYSQL_DATABASE=sablecoin
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=itsecure
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
       - PASSWORD_SALT=k4Ms9fM2
       - CHAIN=${CHAIN}
       - HARDFORK=${HARDFORK}
