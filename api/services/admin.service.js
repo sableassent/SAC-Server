@@ -1,26 +1,25 @@
 const utils = require('../utils');
 const twinBcrypt = require('twin-bcrypt');
 const md5 = require('md5');
-const Admin = require('../models').Admin;
-const AdminAccessToken = require('../models').AdminAccessToken;
+const Admin = require("../models/admin.model")
 const EthereumService = require('../services/ethereum.service');
 
-exports.findById = async function (_id) {
-    let admin = await Admin.findOne({
-        attributes: [
-            '_id', 'name', 'email'
-        ], where: { _id: _id }
-    });
-    return admin || null;
-}
+// exports.findById = async function (_id) {
+//     let admin = await Admin.findOne({
+//         attributes: [
+//             '_id', 'name', 'email'
+//         ], where: { _id: _id }
+//     });
+//     return admin || null;
+// }
 
 exports.findByEmail = async function (email) {
-    let admin = await Admin.findOne({ where: { email: email } });
+    let admin = await Admin.findOne({email: email });
     return admin || null;
 }
 
 exports.findByAccessToken = async function (token) {
-    let adminAccessToken = await AdminAccessToken.findOne({ where: { _id: token } });
+    let adminAccessToken = await Admin.findOne({ where: { 'accessToken.token': token } });
     if (!adminAccessToken) throw Error('Invalid access token.');
     if (!adminAccessToken.isActive) throw Error('Access token expired.');
     let admin = await Admin.findOne({ where: { _id: adminAccessToken.adminId } });
@@ -44,13 +43,9 @@ exports.login = async function (obj) {
     let admin = await module.exports.findByEmail(obj.email);
     if (!admin) throw Error('Invalid credentials.');
     if (!await module.exports.verifyPassword(admin, obj.password)) throw Error('Invalid credentials.');
-    let adminAccessToken = utils.getUid(92, 'alphaNumeric');
-    await AdminAccessToken.create({
-        _id: adminAccessToken,
-        adminId: admin._id,
-        isActive: true,
-    });
-    admin = await module.exports.findById(admin._id);
+    const adminAccessToken = utils.getUid(92, 'alphaNumeric');
+    admin.accessToken.token = adminAccessToken;
+    admin.save();
     // let wallet = await EthereumService.getWallet(admin._id);
     return [adminAccessToken, admin];
 }
@@ -62,12 +57,20 @@ exports.create = async function (obj) {
     if (!await utils.isEmail(obj.email)) throw Error('Provide valid email address.');
     let _id = utils.getUid(92, 'alphaNumeric');
     let passwordHash = module.exports.createPasswordHash(obj.password);
-    await Admin.create({
+    const admin = new Admin({
         _id: _id,
         name: obj.name,
         email: obj.email,
         password: passwordHash
-    });
+    })
+    try {
+        await admin.save();
+        // await Admin.create(, (err, small) => {
+        //     console.error(err, small);
+        // });
+    }catch (e) {
+        throw e;
+    }
     return _id;
 }
 
@@ -77,7 +80,7 @@ exports.changePassword = async function (obj, admin) {
     if (obj.oldPassword == obj.newPassword) throw Error('Old password and new password should not be same.');
     if (!module.exports.verifyPassword(admin, obj.oldPassword)) throw Error('Wrong old password, please try again.');
     let passwordHash = module.exports.createPasswordHash(obj.newPassword);
-    await Admin.update({ password: passwordHash }, {
+    await Admin.updateOne({ password: passwordHash }, {
         where: {
             _id: admin._id
         }
