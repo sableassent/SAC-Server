@@ -53,4 +53,6 @@ const TransactionSchema = new mongoose.Schema(
 // in question, and the `next()` function
 TransactionSchema.post('save', validators.duplicateKey);
 
+AdminSchema.index({ status: -1 });
+
 module.exports = mongoose.model('Transaction', TransactionSchema);

@@ -8,16 +8,12 @@ const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_API_ENDPOINT));
 
 exports.getWallet = async function () {
-    let wallet = await Wallet.findOne({
-        attributes: [
-            '_id', 'balanceETH', 'balanceSAC', 'fixedFees', 'percentFees'
-        ]
-    });
+    let wallet = await Wallet.findOne();
     return wallet || null;
 }
 
 exports.findAndCountAllTransaction = async function (match) {
-    let { count, rows } = await Transaction.findAndCountAll(match);
+    let count = await Transaction.count(match);
     return count;
 }
 
@@ -29,7 +25,7 @@ exports.isActivated = async function () {
 exports.activate = async function (obj) {
     if (web3.eth.accounts.wallet['0']) return;
     if (!obj.secretKey) throw Error();
-    let wallet = await Wallet.findOne({});
+    let wallet = await Wallet.findOne();
     if (!wallet) throw Error();
     let decryptedPrivateKey = aes256.decrypt(obj.secretKey, wallet.privateKey);
     if (!decryptedPrivateKey) throw Error();
@@ -53,22 +49,15 @@ exports.balanceOf = async function (address) {
 exports.updateBalance = async function () {
     try {
         do {
-            let wallet = await Wallet.findOne({});
+            let wallet = await Wallet.findOne();
             if (!wallet) break;
             try {
                 let balanceETH = await web3.eth.getBalance(wallet._id);
                 balanceETH = web3.utils.fromWei(balanceETH, 'ether');
-                await Wallet.update({ balanceETH: balanceETH }, {
-                    where: {
-                        _id: wallet._id
-                    }
-                });
+                wallet.balanceETH = balanceETH;
                 let balanceSAC = await module.exports.balanceOf(wallet._id);
-                await Wallet.update({ balanceSAC: balanceSAC }, {
-                    where: {
-                        _id: wallet._id
-                    }
-                });
+                wallet.balanceSAC = balanceSAC;
+                await wallet.save();
             } catch (error) { }
         } while (false);
     } catch (error) { console.log(error) }
@@ -78,17 +67,14 @@ exports.updateBalance = async function () {
 exports.updateTransactionStatus = async function () {
     try {
         do {
-            let transaction = await Transaction.findOne({ where: { status: 'Pending' } });
+            let transaction = await Transaction.findOne({ status: 'Pending' });
             if (!transaction) break;
             try {
                 let transactionReceipt = await web3.eth.getTransactionReceipt(transaction._id);
                 if (!transactionReceipt) break;
                 let status = transactionReceipt.status ? 'Success' : 'Failed';
-                await Transaction.update({ status: status }, {
-                    where: {
-                        _id: transaction._id
-                    }
-                });
+                transaction.status = status;
+                await transaction.save();
             } catch (error) { }
         } while (false);
     } catch (error) { }
@@ -148,11 +134,9 @@ exports.transferEtherless = async (obj) => {
                 if (txHash) {
                     let status = 'Success';
                     if (!receipt.status) status = 'Failed';
-                    await Transaction.update({ status: status }, {
-                        where: {
-                            _id: txHash
-                        }
-                    });
+                    const transaction = Transaction.findOne({_id: txHash});
+                    transaction.status = status;
+                    await transaction.save();
                 }
             })
             .on('error', async error => {
@@ -160,18 +144,16 @@ exports.transferEtherless = async (obj) => {
                 if (!resolved) {
                     resolved = true;
                     if (txHash) {
-                        await Transaction.update({ status: 'Failed' }, {
-                            where: {
-                                _id: txHash
-                            }
-                        });
+                        const transaction = Transaction.findOne({_id: txHash});
+                        transaction.status = 'Failed';
+                        await transaction.save();
                     }
                     reject(error);
                 }
             });
     });
     if (txHash) {
-        await Transaction.create({
+        const transaction = new Transaction({
             _id: txHash,
             from: obj.sender.toLowerCase(),
             to: obj.receipient.toLowerCase(),
@@ -183,13 +165,14 @@ exports.transferEtherless = async (obj) => {
             status: 'Pending',
             updatedAt: new Date(),
             createdAt: new Date()
-        });
+        })
+        await transaction.save();
     }
     return txHash;
 }
 
 exports.getTransaction = async (txHash) => {
-    let transaction = await Transaction.findOne({ where: { _id: txHash } });
+    let transaction = await Transaction.findOne({ _id: txHash });
     if (!transaction) throw Error('Transaction ' + txHash + ' not found.');
     delete transaction.updatedAt;
     delete transaction.createdAt;
@@ -207,15 +190,16 @@ exports.getTransaction = async (txHash) => {
 exports.search = async (obj, page, limit) => {
     let match = module.exports.prepareMatchByFilter(obj);
     page = page > 1 ? page - 1 : 0;
-    let transactions = await Transaction.findAll({ where: match, offset: (page * limit), limit: limit, order: [['createdAt', 'DESC']] });
-    let { count, rows } = await Transaction.findAndCountAll({ where: match });
+    // let transactions = await Transaction.findAll({ where: match, offset: (page * limit), limit: limit, order: [['createdAt', 'DESC']] });
+    let transactions = await Transaction.find(match).skip(page * limit).limit(limit).sort({'createdAt': -1});
+    let count = await Transaction.count(match);
     return [transactions, count];
 }
 
 exports.downloadAsCsv = async function (obj) {
     let csvData = [['Hash', 'From', 'To', 'Amount', 'Fees', 'Nonce', 'Status', 'Date']];
     let match = module.exports.prepareMatchByFilter(obj);
-    let transactions = await Transaction.findAll({ where: match, order: [['createdAt', 'DESC']] });
+    let transactions = await Transaction.find(match).sort({'createdAt': -1});
     if (transactions.length) {
         for (let transaction of transactions) {
             let obj = [
@@ -271,19 +255,11 @@ exports.withdraw = async function (obj) {
 
 exports.setFees = async function (obj) {
     if (!web3.eth.accounts.wallet['0']) throw Error('Wallet not activated.');
-    let wallet = await Wallet.findOne({});
+    let wallet = await Wallet.findOne({_id: wallet._id});
     if (!wallet) throw Error('Wallet not found.');
-    await Wallet.update(
-        {
-            fixedFees: obj.fixedFees,
-            percentFees: obj.percentFees
-        },
-        {
-            where: {
-                _id: wallet._id
-            }
-        }
-    );
+    wallet.fixedFees = obj.fixedFees;
+    wallet.percentFees = obj.percentFees;
+    await wallet.save();
 }
 
 exports.getSeparateFees = async function () {
