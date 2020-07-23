@@ -62,7 +62,7 @@ module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
             },
         body:
             { personalizations:
-                    [{ to: [ { email: email, name: 'John Doe' } ],
+                    [{ to: [ { email: email, name: user.name } ],
                         dynamic_template_data:
                             {
                                 OTP: otp ,
@@ -72,6 +72,42 @@ module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
                 from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
                 reply_to: { email: 'support@sableaccent.co', name: 'Sable Assent' },
                 template_id: 'd-d1cdb1d314664bae921011b5d93adaf7' },
+        json: true };
+
+    request(options, callback);
+}
+
+/**
+ * Send contact us reset email to user
+ * @param user  {User}
+ * @param email {string}
+ * @param otp   {string}
+ * @param callback {function}
+ * @returns     {Promise<any>}
+ */
+module.exports.sendContactUsEmailSG = function (user, email, otp, callback) {
+
+    let options = { method: 'POST',
+        url: 'https://api.sendgrid.com/v3/mail/send',
+        headers:
+            {
+                "Authorization": `Bearer ${SG_API_KEY}`,
+                "content-type": "application/json"
+            },
+        body:
+            { personalizations:
+                    [{ to: [ { email: email, name: user.name } ],
+                        dynamic_template_data:
+                            {
+                                contact_type: "",
+                                contact_us: "",
+                                user_email: "",
+                                user_message: ""
+                            },
+                        subject: 'Contact Us Form' } ],
+                from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
+                reply_to: { email: 'support@sableaccent.co', name: 'Sable Assent' },
+                template_id: 'd-e0cb589bec4a4221b8df884ed25fd9c8' },
         json: true };
 
     request(options, callback);
