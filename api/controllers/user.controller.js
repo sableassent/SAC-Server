@@ -21,7 +21,17 @@ exports.userLogin = async function (req, res, next) {
         return res.status(200).json({
             tokenType: 'Bearer',
             userAccessToken: userAccessToken,
-            user: user,
+            user: {
+                _id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                walletAddress: user.walletAddress,
+                referralCode: user.referralCode,
+                phoneNumberVerified: user.phoneNumberVerification.isVerified,
+                emailVerified: user.emailVerification.isVerified
+            },
         });
     } catch (e) {
         return res.status(500).send(e.message);
