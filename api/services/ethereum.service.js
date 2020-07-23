@@ -30,7 +30,7 @@ exports.activate = async function (obj) {
     if (!decryptedPrivateKey) throw Error();
     let account = await web3.eth.accounts.privateKeyToAccount(decryptedPrivateKey);
     if (!account) throw Error();
-    if (account.address.toLowerCase() != wallet._id.toLowerCase()) throw Error();
+    if (account.address.toLowerCase() !== wallet._id.toLowerCase()) throw Error();
     web3.eth.accounts.wallet.add(decryptedPrivateKey);
 }
 

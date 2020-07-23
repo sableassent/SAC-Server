@@ -1,8 +1,7 @@
 const utils = require('../utils');
-const twinBcrypt = require('twin-bcrypt');
-const md5 = require('md5');
 const Admin = require("../models/admin.model")
-
+const passwordUtils = require("../utils/passwordUtils")
+const EthereumService = require("./ethereum.service");
 
 exports.findByEmail = async function (email) {
     let admin = await Admin.findOne({email: email });
@@ -15,15 +14,21 @@ exports.findByAccessToken = async function (token) {
     if (!user.accessToken.isActive) throw Error('Access token expired.');
     return user;
 }
-
-
-exports.createPasswordHash = function (password) {
-    return twinBcrypt.hashSync(process.env.PASSWORD_SALT + md5(password));
-}
-
-exports.verifyPassword = function (admin, password) {
-    let passwordHash = process.env.PASSWORD_SALT + md5(password);
-    return twinBcrypt.compareSync(passwordHash, admin.password);
+exports.me = async function (req, admin) {
+    let wallet = await EthereumService.getWallet();
+    let contractBalanceSAC = await EthereumService.balanceOf(process.env.SAC1_ADDRESS);
+    let totalTransaction = await EthereumService.findAndCountAllTransaction({});
+    const todayStartDate = new Date().setHours(0, 0, 0);
+    const todayEndDate = new Date().setHours(23, 59, 59);
+    let match = { createdAt: { $gte: new Date(todayStartDate), $lte: new Date(todayEndDate) } };
+    let todayTotalTransaction = await EthereumService.findAndCountAllTransaction(match);
+    return ({
+        admin: admin,
+        wallet: wallet,
+        contractBalanceSAC: contractBalanceSAC,
+        totalTransaction: totalTransaction,
+        todayTotalTransaction: todayTotalTransaction
+    });
 }
 
 exports.login = async function (obj) {
@@ -32,7 +37,7 @@ exports.login = async function (obj) {
     if (!await utils.isEmail(obj.email)) throw Error('Provide valid email address.');
     let admin = await module.exports.findByEmail(obj.email);
     if (!admin) throw Error('Invalid credentials.');
-    if (!await module.exports.verifyPassword(admin, obj.password)) throw Error('Invalid credentials.');
+    if (!await passwordUtils.verifyPassword(admin, obj.password)) throw Error('Invalid credentials.');
     const adminAccessToken = utils.getUid(92, 'alphaNumeric');
     admin.accessToken.token = adminAccessToken;
     admin.accessToken.isActive = true;
@@ -47,7 +52,7 @@ exports.create = async function (obj) {
     if (!obj.password) throw Error('Password is required.');
     if (!await utils.isEmail(obj.email)) throw Error('Provide valid email address.');
     let _id = utils.getUid(92, 'alphaNumeric');
-    let passwordHash = module.exports.createPasswordHash(obj.password);
+    let passwordHash = passwordUtils.createPasswordHash(obj.password);
     const admin = new Admin({
         _id: _id,
         name: obj.name,

@@ -12,7 +12,6 @@ module.exports.verifyPassword = function (user, password) {
 
 module.exports.verifyToken = function (A) {
     return async function (req, res, next) {
-        console.log(req.headers);
         try {
             if (!req.headers['authorization']) {
                 return res.sendStatus(401);

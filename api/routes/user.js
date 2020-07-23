@@ -10,8 +10,8 @@ router.post('/userResetPassword', UserController.userResetPassword);
 router.post('/userNewPassword', UserController.userNewPassword);
 router.post('/addReferral', UserController.addReferral);
 router.post('/checkReferralCode', UserController.checkReferralCode);
+
 // with auth
-router.get('/userMe', UserController.verifyToken, UserController.userMe);
 router.post('/userChangePassword', UserController.verifyToken, UserController.userChangePassword);
 router.post('/userLogout', UserController.verifyToken, UserController.userLogout);
 router.post('/addWalletAddress', UserController.verifyToken, UserController.addWalletAddress);

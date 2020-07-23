@@ -2,9 +2,11 @@
 const express = require('express');
 const router = express.Router();
 const AdminController = require('../controllers/admin.controller');
-
+//without auth
 router.post('/create', AdminController.create);
 router.use('/login', AdminController.login);
+
+//with auth
 router.get('/me', AdminController.verifyToken, AdminController.me);
 router.post('/resetPassword', AdminController.verifyToken, AdminController.resetPassword);
 router.post('/changePassword', AdminController.verifyToken, AdminController.changePassword);
