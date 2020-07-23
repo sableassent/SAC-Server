@@ -35,6 +35,7 @@ exports.login = async function (obj) {
     if (!await module.exports.verifyPassword(admin, obj.password)) throw Error('Invalid credentials.');
     const adminAccessToken = utils.getUid(92, 'alphaNumeric');
     admin.accessToken.token = adminAccessToken;
+    admin.accessToken.isActive = true;
     admin.save();
     // let wallet = await EthereumService.getWallet(admin._id);
     return [adminAccessToken, admin];

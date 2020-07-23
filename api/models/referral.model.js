@@ -48,4 +48,4 @@ const ReferralSchema = new mongoose.Schema(
 // in question, and the `next()` function
 ReferralSchema.post('save', validators.duplicateKey);
 
-module.exports = mongoose.model('Referral', ReferralSchema);
+module.exports = mongoose.model('Referrals', ReferralSchema);

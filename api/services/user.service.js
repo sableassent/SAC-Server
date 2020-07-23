@@ -1,7 +1,7 @@
 const utils = require("../utils");
 const User = require("../models/user.model");
 const Referral = require("../models/referral.model");
-const client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
+var client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
 const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
 
@@ -17,7 +17,6 @@ exports.findByAccessToken = async function (token) {
     return user;
 }
 
-
 exports.findByEmail = async function (email) {
     let user = await User.findOne({ email: email });
     return user || null;
@@ -27,7 +26,6 @@ exports.findByPhoneNumber = async function (phoneNumber) {
     let user = await User.findOne({ phoneNumber: phoneNumber });
     return user || null;
 };
-
 
 exports.userLogin = async function (obj) {
     if (!obj.email) throw Error("Email is required.");
