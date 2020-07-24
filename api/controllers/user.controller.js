@@ -174,9 +174,20 @@ exports.getAllUsers = async function (req, res, next) {
     }
 }
 
+exports.checkUsername = async function (req, res, next) {
+    try {
+        const userExists = await UserService.checkUsername(req.body);
+        return res.status(200).json(
+            userExists
+        )
+    }catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
 exports.contactUs = async function (req, res, next) {
     try {
-        let result = await UserService.contactUs(req.body);
+        let result = await UserService.contactUs(req.body, req.user);
         return res.status(200).json(result);
     } catch (e) {
         return res.status(500).send(e.message);

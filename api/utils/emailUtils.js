@@ -79,13 +79,15 @@ module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
 
 /**
  * Send contact us reset email to user
- * @param user  {User}
- * @param email {string}
- * @param otp   {string}
- * @param callback {function}
- * @returns     {Promise<any>}
+ * @param user_name         {String}
+ * @param contact_type      {String}
+ * @param contact_us        {string}
+ * @param user_email        {String}
+ * @param user_message      {String}
+ * @param callback          {function}
+ * @returns                 {Promise<any>}
  */
-module.exports.sendContactUsEmailSG = function (user, contact_type, contact_us, user_email, user_message, callback) {
+module.exports.sendContactUsEmailSG = function (user_name, contact_type, contact_us, user_email, user_message, callback) {
 
     let options = { method: 'POST',
         url: 'https://api.sendgrid.com/v3/mail/send',
@@ -96,17 +98,17 @@ module.exports.sendContactUsEmailSG = function (user, contact_type, contact_us, 
             },
         body:
             { personalizations:
-                    [{ to: [ { email: user_email, name: user.name } ],
+                    [{ to: [ { email: 'admin@sableassent.com', name: 'Sable Accent Admin' } ],
                         dynamic_template_data:
                             {
-                                contact_type: "",
-                                contact_us: "",
-                                user_email: "",
-                                user_message: ""
+                                contact_type,
+                                contact_us,
+                                user_email,
+                                user_message
                             },
-                        subject: 'Contact Us Form' } ],
-                from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
-                reply_to: { email: 'patilgpratik@gmail.com', name: 'Sable Assent' },
+                        subject: `Contact Us Request from ${user_name}` } ],
+                from: { email: 'support@sableaccent.com', name: 'Sable Assent' },
+                reply_to: { email: 'admin@sableaccent.com', name: 'Sable Assent' },
                 template_id: 'd-e0cb589bec4a4221b8df884ed25fd9c8' },
         json: true };
 

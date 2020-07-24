@@ -18,6 +18,11 @@ exports.findByAccessToken = async function (token) {
     return user;
 }
 
+exports.findByUsername = async function (username) {
+    const user = await User.findOne({username: username});
+    return user || null;
+}
+
 exports.findByEmail = async function (email) {
     let user = await User.findOne({ email: email });
     return user || null;
@@ -270,16 +275,23 @@ exports.getAllUsers = async function (obj) {
     }
 };
 
-exports.contactUs = async function (obj) {
-    if (!obj.contact_type) throw Error("Contact Type is required.");
-    if (!obj.contact_us) throw Error("Contact Number is required.");
-    if (!obj.user_email) throw Error("User Email is required.");
-    if (!obj.user_message) throw Error("User Message is required.");
+exports.checkUsername = async function (obj) {
+    const {username} = obj;
+    if(!username) throw new Error("Username is required.");
+    const user = await module.exports.findByUsername(username.trim());
+    return {
+        userExists: user != null
+    }
+}
+
+exports.contactUs = async function (obj, user) {
+    const {contact_type, user_message} = obj;
+    if (!contact_type) throw Error("Contact Type is required.");
+    if (!user_message) throw Error("User Message is required.");
     const returnMessage = "Email Sent";
 
-    let user = await User.find({ email: obj.user_email });
 
-    emailUtils.sendContactUsEmailSG(user, obj.contact_type, obj.contact_us, obj.user_email, obj.user_message, function (error, response, body) {
+    emailUtils.sendContactUsEmailSG(user.name, obj.contact_type, user.phoneNumber, user.email, obj.user_message, function (error, response, body) {
         if (error) {
             console.log("Error sending email: ${error}")
             throw Error(error);

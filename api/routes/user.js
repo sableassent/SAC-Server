@@ -10,6 +10,8 @@ router.post('/userResetPassword', UserController.userResetPassword);
 router.post('/userNewPassword', UserController.userNewPassword);
 router.post('/addReferral', UserController.addReferral);
 router.post('/checkReferralCode', UserController.checkReferralCode);
+router.post('/checkUsername', UserController.checkUsername);
+
 
 // with auth
 router.post('/userChangePassword', UserController.verifyToken, UserController.userChangePassword);
