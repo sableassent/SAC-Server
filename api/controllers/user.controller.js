@@ -173,3 +173,12 @@ exports.getAllUsers = async function (req, res, next) {
         return res.status(500).send(e.message);
     }
 }
+
+exports.contactUs = async function (req, res, next) {
+    try {
+        let result = await UserService.contactUs(req.body);
+        return res.status(200).json(result);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}

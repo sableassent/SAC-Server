@@ -4,6 +4,7 @@ const Referral = require("../models/referral.model");
 var client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
 const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
+const emailUtils = require("../utils/emailUtils")
 
 exports.findByReferralCode = async function (referralCode) {
     let user = await User.findOne({ referralCode: referralCode });
@@ -260,11 +261,32 @@ exports.verifyOTP = async function (obj, user) {
 exports.getAllUsers = async function (obj) {
     if (!obj.email) throw Error("Email is required.");
     //Fetching All user with walletAddress not null except the current user
-    let users = await User.find({ $and: [{ email: { $not: obj.email } }, { walletAddress: { $not: null } }]});
+    let users = await User.find({ $and: [{ email: { $ne: obj.email } }, { walletAddress: { $ne: null } }]});
 
     if (users) {
         return users;
     } else {
         throw Error("No Users Found!");
     }
+};
+
+exports.contactUs = async function (obj) {
+    if (!obj.contact_type) throw Error("Contact Type is required.");
+    if (!obj.contact_us) throw Error("Contact Number is required.");
+    if (!obj.user_email) throw Error("User Email is required.");
+    if (!obj.user_message) throw Error("User Message is required.");
+    const returnMessage = "Email Sent";
+
+    let user = await User.find({ email: obj.user_email });
+
+    emailUtils.sendContactUsEmailSG(user, obj.contact_type, obj.contact_us, obj.user_email, obj.user_message, function (error, response, body) {
+        if (error) {
+            console.log("Error sending email: ${error}")
+            throw Error(error);
+        }
+
+        console.log(`Mail Response: ${body}`);
+    })
+
+    return returnMessage;
 };

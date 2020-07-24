@@ -20,5 +20,6 @@ router.post('/verifyOTP', UserController.verifyToken, UserController.verifyOTP);
 router.post('/referralStatusUpdate', UserController.verifyToken, UserController.referralStatusUpdate);
 router.post('/getAllReferrals', UserController.verifyToken, UserController.getAllReferrals);
 router.post('/getAllUsers', UserController.verifyToken, UserController.getAllUsers);
+router.post('/contactUs', UserController.verifyToken, UserController.contactUs);
 
 module.exports = router;

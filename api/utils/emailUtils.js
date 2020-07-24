@@ -85,7 +85,7 @@ module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
  * @param callback {function}
  * @returns     {Promise<any>}
  */
-module.exports.sendContactUsEmailSG = function (user, email, otp, callback) {
+module.exports.sendContactUsEmailSG = function (user, contact_type, contact_us, user_email, user_message, callback) {
 
     let options = { method: 'POST',
         url: 'https://api.sendgrid.com/v3/mail/send',
@@ -96,7 +96,7 @@ module.exports.sendContactUsEmailSG = function (user, email, otp, callback) {
             },
         body:
             { personalizations:
-                    [{ to: [ { email: email, name: user.name } ],
+                    [{ to: [ { email: user_email, name: user.name } ],
                         dynamic_template_data:
                             {
                                 contact_type: "",
@@ -106,7 +106,7 @@ module.exports.sendContactUsEmailSG = function (user, email, otp, callback) {
                             },
                         subject: 'Contact Us Form' } ],
                 from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
-                reply_to: { email: 'support@sableaccent.co', name: 'Sable Assent' },
+                reply_to: { email: 'patilgpratik@gmail.com', name: 'Sable Assent' },
                 template_id: 'd-e0cb589bec4a4221b8df884ed25fd9c8' },
         json: true };
 
