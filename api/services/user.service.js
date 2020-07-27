@@ -302,3 +302,7 @@ exports.contactUs = async function (obj, user) {
 
     return returnMessage;
 };
+
+exports.uploadProfilePicture = async function (obj, user) {
+
+}

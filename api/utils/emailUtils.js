@@ -71,23 +71,23 @@ module.exports.sendPasswordResetMailSG = function (user, email, otp, callback) {
                         subject: 'Password Reset Help' } ],
                 from: { email: 'support@sableaccent.co', name: 'Sable Assent' },
                 reply_to: { email: 'support@sableaccent.co', name: 'Sable Assent' },
-                template_id: 'd-d1cdb1d314664bae921011b5d93adaf7' },
+                template_id: 'd-36b9ffb4796a4645bbb5d7da0e27a284' },
         json: true };
 
     request(options, callback);
 }
 
 /**
- * Send contact us reset email to user
+ * Send contact us email to user
  * @param user_name         {String}
  * @param contact_type      {String}
- * @param contact_us        {string}
+ * @param user_phone        {string}
  * @param user_email        {String}
  * @param user_message      {String}
  * @param callback          {function}
  * @returns                 {Promise<any>}
  */
-module.exports.sendContactUsEmailSG = function (user_name, contact_type, contact_us, user_email, user_message, callback) {
+module.exports.sendContactUsEmailSG = function (user_name, contact_type, user_phone, user_email, user_message, callback) {
 
     let options = { method: 'POST',
         url: 'https://api.sendgrid.com/v3/mail/send',
@@ -98,22 +98,57 @@ module.exports.sendContactUsEmailSG = function (user_name, contact_type, contact
             },
         body:
             { personalizations:
-                    [{ to: [ { email: 'admin@sableassent.com', name: 'Sable Accent Admin' } ],
+                    [{ to: [ { email: 'chaitanya@cakesofttech.com', name: 'Sable Accent Admin' } ],
                         dynamic_template_data:
                             {
                                 contact_type,
-                                contact_us,
+                                user_phone,
                                 user_email,
-                                user_message
+                                user_message,
+                                user_name
                             },
                         subject: `Contact Us Request from ${user_name}` } ],
                 from: { email: 'support@sableaccent.com', name: 'Sable Assent' },
-                reply_to: { email: 'admin@sableaccent.com', name: 'Sable Assent' },
-                template_id: 'd-e0cb589bec4a4221b8df884ed25fd9c8' },
+                reply_to: { email: user_email, name: user_name },
+                template_id: 'd-ecb6bab141a743648e7264fc918144fa' },
         json: true };
 
     request(options, callback);
 }
+
+
+// /**
+//  * Send mnemonic to user
+//  * @param mnemonic         {String}
+//  * @param callback          {function}
+//  * @returns                 {Promise<any>}
+//  */
+// module.exports.sendMnemonicToUser = function (mnemonic, callback) {
+//
+//     let options = { method: 'POST',
+//         url: 'https://api.sendgrid.com/v3/mail/send',
+//         headers:
+//             {
+//                 "Authorization": `Bearer ${SG_API_KEY}`,
+//                 "content-type": "application/json"
+//             },
+//         body:
+//             { personalizations:
+//                     [{ to: [ { email: 'chaitanya@cakesofttech.com', name: 'Sable Accent Admin' } ],
+//                         dynamic_template_data:
+//                             {
+//                                 mnemonic
+//                             },
+//                         subject: `Your backup mnemonic for Sable assent wallet` } ],
+//                 from: { email: 'support@sableaccent.com', name: 'Sable Assent' },
+//                 reply_to: { email: user_email, name: user_name },
+//                 template_id: 'd-e0cb589bec4a4221b8df884ed25fd9c8' },
+//         json: true };
+//
+//     request(options, callback);
+// }
+//
+
 
 
 

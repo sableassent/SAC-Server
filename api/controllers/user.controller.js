@@ -188,7 +188,16 @@ exports.checkUsername = async function (req, res, next) {
 exports.contactUs = async function (req, res, next) {
     try {
         let result = await UserService.contactUs(req.body, req.user);
-        return res.status(200).json(result);
+        return res.status(200).send(result);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+
+exports.uploadProfilePicture = async function (req, res, next) {
+    try {
+        let result = await UserService.uploadProfilePicture(req.body, req.user);
+        return res.status(200).send(result);
     } catch (e) {
         return res.status(500).send(e.message);
     }
