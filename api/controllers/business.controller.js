@@ -59,3 +59,19 @@ exports.getCategories = async (req, res, next) => {
         res.status(500).send(e.message);
     }
 }
+
+exports.getMyBusiness = async (req, res, next) => {
+    try{
+        return res.status(200).send(await BusinessService.getMyBusiness(req.body, req.user));
+    }catch (e) {
+        res.status(500).send(e.message);
+    }
+}
+
+exports.addImage = async (req, res, next) => {
+    try{
+        return res.status(200).send(await BusinessService.addBusinessImage(req, req.user));
+    }catch (e) {
+        res.status(500).send(e.message);
+    }
+}

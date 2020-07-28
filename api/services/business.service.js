@@ -2,7 +2,7 @@ const User = require("../models/user.model");
 const Business = require("../models/business.model");
 const utils = require('../utils');
 const businessCategories = require("../models/businessCategory.model");
-
+const FileUploadService = require("./fileUpload.service")
 
 const validVerificationStatus = ["PENDING", "VERIFIED"];
 
@@ -18,7 +18,7 @@ exports.findForSearch = async (searchQuery, category) => {
     if(category && !category.trim().length > 0) {
         andQuery.push({category: category.trim()});
     }
-    return await Business.find({$and: andQuery}).limit(10) || null;
+    return Business.find({$and: andQuery}).limit(10) || null;
 }
 
 exports.findByLocation = async (location, maxDistance) => {
@@ -39,11 +39,20 @@ exports.findByLocation = async (location, maxDistance) => {
     return Business.find({$and: andQuery}).limit(100) || null;
 }
 
-exports.findByVerificationStatus = async (verification) => {
-    if(!verification) throw Error("verification status cannot be empty");
-    if(validVerificationStatus.indexOf(verification) === -1)
-        throw Error("Invalid status");
-    return await Business.find({verification}) || null;
+exports.findByUserId = async (userId) => {
+    return Business.find({userId}) || null;
+}
+
+exports.findByVerificationStatus = async (verification, offset, limit) => {
+    // if(!verification) throw Error("verification status cannot be empty");
+    // if(validVerificationStatus.indexOf(verification) === -1)
+    //     throw Error("Invalid status");
+    if(!offset) offset = 0;
+    if(!limit)  limit = 10;
+    if(!verification){
+        return await Business.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit) || null;
+    }
+    return await Business.find({verification}).sort({ createdAt: -1 }).skip(offset).limit(limit) || null;
 }
 
 // exports.getByStatus = async (status) => {
@@ -51,7 +60,7 @@ exports.findByVerificationStatus = async (verification) => {
 // }
 
 exports.createBusiness = async (obj, user) => {
-    const {name, email, phoneNumber, address, location, category} = obj;
+    const {name, email, phoneNumber, address, location, category,twitterUrl,instagramUrl,facebookUrl} = obj;
     if(!name) throw Error("Invalid business name");
     if(!email) throw Error("Invalid email");
     if(!phoneNumber) throw Error("Invalid phone number");
@@ -68,6 +77,9 @@ exports.createBusiness = async (obj, user) => {
         phoneNumber,
         address,
         category,
+        twitterUrl,
+        instagramUrl,
+        facebookUrl,
         location: {
             type: 'Point',
             coordinates: [location.latitude, location.longitude]
@@ -115,7 +127,8 @@ exports.verifyBusiness = async (obj, admin) => {
 }
 
 exports.modifyBusiness = async (obj, user) => {
-    const {name, email, phoneNumber, address, location, businessId} = obj;
+    const {name, email, phoneNumber, address, location, businessId, category,twitterUrl,instagramUrl,facebookUrl} = obj;
+
     if(!businessId) throw Error("businessId cannot be empty");
     if(!name) throw Error("Invalid business name");
     if(!email) throw Error("Invalid email");
@@ -130,6 +143,10 @@ exports.modifyBusiness = async (obj, user) => {
         email,
         phoneNumber,
         address,
+        category,
+        twitterUrl,
+        instagramUrl,
+        facebookUrl,
         location: {
             type: 'Point',
             coordinates: [location.latitude, location.longitude]
@@ -138,17 +155,34 @@ exports.modifyBusiness = async (obj, user) => {
 }
 
 exports.getBusinessByStatus = async (obj, admin) => {
-    let {verificationStatus} = obj;
+    let {verificationStatus, offset, limit} = obj;
+    if(verificationStatus)
     verificationStatus = verificationStatus.toUpperCase();
-    if(!verificationStatus) throw Error("Verification status cannot be empty");
-    if(validVerificationStatus.indexOf(verificationStatus) === -1){
+    if(verificationStatus && validVerificationStatus.indexOf(verificationStatus) === -1){
         //invalid verification status
         throw Error("Invalid verification status");
     }
 
-    return module.exports.findByVerificationStatus(verificationStatus);
+    return module.exports.findByVerificationStatus(verificationStatus, offset, limit);
 }
 
 exports.getCategoryList = async (obj, user) => {
     return businessCategories.categories;
+}
+
+exports.addBusinessImage = async (req, user) => {
+    const imageId = await FileUploadService.uploadFileUnique(req);
+    const {businessId} = req.body;
+    if(!businessId) throw Error("business ID cannot be empty");
+
+    let business = await Business.findById(businessId);
+    if(business.userId !== user._id){
+        throw Error("User does not match")
+    }
+    business.images.push({createdAt: new Date(), imageId: imageId});
+    return business.save();
+}
+
+exports.getMyBusiness = async (obj, user) => {
+    return findByUserId(user._id);
 }

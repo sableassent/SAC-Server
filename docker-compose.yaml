@@ -6,6 +6,7 @@ networks:
 services:
   minio:
     image: minio/minio
+    container_name: minio
     volumes:
       - /opt/minio:/data
     ports:
@@ -19,6 +20,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - main
 
   mongo:
     image: mongo
@@ -54,6 +57,8 @@ services:
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - TWILIO_ACCOUNTSID=${TWILIO_ACCOUNTSID}
       - TWILIO_AUTHTOKEN=${TWILIO_AUTHTOKEN}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     command: sh -c "node app.js"
     restart: always
     ports:

@@ -54,6 +54,36 @@ const BusinessSchema = new mongoose.Schema(
         emailVerification: {
             type: VerificationSchema,
         },
+        websiteUrl: {
+            type: String,
+            required: false,
+        },
+        twitterUrl: {
+            type: String,
+            required: false,
+        },
+        instagramUrl: {
+            type: String,
+            required: false,
+        },
+        facebookUrl: {
+            type: String,
+            required: false,
+        },
+        foundationYear: {
+            type: String,
+            required: true
+        },
+        images: [{
+            createdAt: {
+                type: Date,
+                default: Date.now,
+                required: true
+            },
+            imageId: {
+                type: String
+            }
+        }]
     },
     {
         timestamps: true,

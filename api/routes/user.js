@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/user.controller');
+const multerUtils = require("../utils/multerUtils");
+const Multer = require("multer");
 
 // without auth
 router.post('/userCreate', UserController.userCreate);
@@ -23,5 +25,7 @@ router.post('/referralStatusUpdate', UserController.verifyToken, UserController.
 router.post('/getAllReferrals', UserController.verifyToken, UserController.getAllReferrals);
 router.post('/getAllUsers', UserController.verifyToken, UserController.getAllUsers);
 router.post('/contactUs', UserController.verifyToken, UserController.contactUs);
+router.post('/uploadProfilePicture', UserController.verifyToken, Multer({storage: Multer.memoryStorage(), fileFilter: multerUtils.multerImageFilter}).single("file"), UserController.uploadProfilePicture);
+router.post('/getProfilePicture', UserController.verifyToken, UserController.getProfilePicture);
 
 module.exports = router;

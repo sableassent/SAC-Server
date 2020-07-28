@@ -3,7 +3,6 @@ const EthereumService = require('../services/ethereum.service');
 const PasswordResetService = require('../services/passwordReset.service');
 const passwordUtils = require("../utils/passwordUtils");
 
-
 exports.userCreate = async function (req, res, next) {
     try {
         let _id = await UserService.userCreate(req.body);
@@ -196,8 +195,14 @@ exports.contactUs = async function (req, res, next) {
 
 exports.uploadProfilePicture = async function (req, res, next) {
     try {
-        let result = await UserService.uploadProfilePicture(req.body, req.user);
-        return res.status(200).send(result);
+        await UserService.uploadProfilePicture(req, res, req.user);
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
+exports.getProfilePicture = async function (req, res, next) {
+    try {
+        await UserService.getProfilePicture(req, res, req.user);
     } catch (e) {
         return res.status(500).send(e.message);
     }

@@ -55,6 +55,10 @@ const UserSchema = new mongoose.Schema(
         emailVerification: {
             type: VerificationSchema,
         },
+        profilePicture: {
+            type: String,
+            required: false,
+        }
     },
     {
         timestamps: true,

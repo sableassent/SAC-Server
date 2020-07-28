@@ -5,6 +5,8 @@ const client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWIL
 const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
 const emailUtils = require("../utils/emailUtils")
+const minioClient = require("../minio");
+
 
 exports.findByReferralCode = async function (referralCode) {
     let user = await User.findOne({ referralCode: referralCode });
@@ -303,6 +305,28 @@ exports.contactUs = async function (obj, user) {
     return returnMessage;
 };
 
-exports.uploadProfilePicture = async function (obj, user) {
+exports.uploadProfilePicture = async function (req, res, user) {
+    const fileNameSplit = req.file.originalname.split(".");
+    const extension = fileNameSplit[fileNameSplit.length-1];
+    const profilePictureName = `${user._id}.${extension}`;
+    minioClient.putObject("images", user._id + `.${extension}`, req.file.buffer, function(error, etag) {
+        if(error) {
+            return console.log(error);
+        }
+        // upload image path to user
+        user.profilePicture = profilePictureName;
+        user.save();
+        res.send("Profile picture set");
+    });
+}
 
+exports.getProfilePicture = async function (req, res, user) {
+    const profilePicture = user.profilePicture;
+    if(!profilePicture) res.status(500).send("No profile picture present");
+    minioClient.getObject("images", profilePicture, function(error, stream) {
+        if(error) {
+            return res.status(500).send(error);
+        }
+        stream.pipe(res);
+    });
 }
