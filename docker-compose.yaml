@@ -1,9 +1,24 @@
-version: '2'
+version: '2.1'
 
 networks:
   main:
 
 services:
+  minio:
+    image: minio/minio
+    volumes:
+      - /opt/minio:/data
+    ports:
+      - "9001:9000"
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+    command: server /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
   mongo:
     image: mongo
@@ -21,6 +36,7 @@ services:
     container_name: api
     depends_on:
       - mongo
+      - minio
     environment:
       - MYSQL_HOST=mysql
       - MYSQL_DATABASE=sablecoin
