@@ -79,10 +79,6 @@ exports.changePassword = async function (obj, admin) {
     await admin.save();
 }
 
-exports.resetPassword = async function (obj, admin) {
-    //Node Mailer
-}
-
 exports.userLogout = async function (token) {
     await Admin.updateOne({ 'accessToken.token' : token },{ 'accessToken.isActive': false });
 };

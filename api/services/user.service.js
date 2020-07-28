@@ -1,7 +1,7 @@
 const utils = require("../utils");
 const User = require("../models/user.model");
 const Referral = require("../models/referral.model");
-var client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
+const client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
 const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
 const emailUtils = require("../utils/emailUtils")

@@ -1,22 +1,23 @@
 const mongoose = require("mongoose");
+const locationPoint = require("./locationPoint.model");
+const addressSchema = require("./address.model");
 const validators = require("../mongoValidators");
+const businessCategories = require("./businessCategory.model");
 const VerificationSchema = require("./verification.model");
 
-const UserSchema = new mongoose.Schema(
+const BusinessSchema = new mongoose.Schema(
     {
         _id: {
             type: String,
-            required: true,
-            primaryKey: true
+            required: true
         },
-        name: {
+        userId: {
             type: String,
             required: true
         },
-        username: {
+        name: {
             type: String,
             required: true,
-            unique: true,
         },
         email: {
             type: String,
@@ -28,26 +29,24 @@ const UserSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
-        password: {
+        address: {
+            type: addressSchema,
+            required: true,
+        },
+        location: {
+            type: locationPoint,
+            required: true,
+        },
+        verification: {
             type: String,
+            enum: ['PENDING', 'VERIFIED'],
+            required: true,
+            default: "PENDING",
+        },
+        category: {
+            type: String,
+            enum: businessCategories.categories,
             required: true
-        },
-        walletAddress: {
-            type: String,
-            allowNull: true
-        },
-        referralCode: {
-            type: String,
-            required: true
-        },
-        accessToken: {
-            token: {
-                type: String,
-            },
-            isActive: {
-                type: Boolean,
-                default: false
-            }
         },
         phoneNumberVerification: {
             type: VerificationSchema,
@@ -63,11 +62,14 @@ const UserSchema = new mongoose.Schema(
     }
 )
 
-UserSchema.index({ accessToken: -1 });
-UserSchema.index({ email: -1 });
+BusinessSchema.index({ name: -1 });
+BusinessSchema.index({ email: -1 });
+BusinessSchema.index({ phoneNumber: -1 });
+BusinessSchema.index({ location: "2dsphere" });
+
 
 // Handler **must** take 3 parameters: the error that occurred, the document
 // in question, and the `next()` function
-UserSchema.post('save', validators.duplicateKey);
+BusinessSchema.post('save', validators.duplicateKey);
 
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = mongoose.model('Businesses', BusinessSchema);
