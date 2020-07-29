@@ -4,7 +4,7 @@ const utils = require('../utils');
 const businessCategories = require("../models/businessCategory.model");
 const FileUploadService = require("./fileUpload.service")
 
-const validVerificationStatus = ["PENDING", "VERIFIED"];
+const validVerificationStatus = ["PENDING", "VERIFIED", "REJECTED"];
 
 /**
  * Business service contains methods related to business creation, finding and other operations
@@ -60,7 +60,7 @@ exports.findByVerificationStatus = async (verification, offset, limit) => {
 // }
 
 exports.createBusiness = async (obj, user) => {
-    const {name, email, phoneNumber, address, location, category,twitterUrl,instagramUrl,facebookUrl} = obj;
+    const {name, email, phoneNumber, address, location, category,twitterUrl,instagramUrl,facebookUrl,description, foundationYear} = obj;
     if(!name) throw Error("Invalid business name");
     if(!email) throw Error("Invalid email");
     if(!phoneNumber) throw Error("Invalid phone number");
@@ -68,6 +68,7 @@ exports.createBusiness = async (obj, user) => {
     if(!location.latitude) throw Error("Location does not contain latitude")
     if(!location.longitude) throw Error("Location does not contain longitude")
     if(!category) throw Error("Category cannot be empty");
+    if(!foundationYear) throw Error("Foundation Year is required");
     const _id = utils.getUid(92, "alphaNumeric");
     let business = new Business({
         _id,
@@ -80,6 +81,8 @@ exports.createBusiness = async (obj, user) => {
         twitterUrl,
         instagramUrl,
         facebookUrl,
+        description,
+        foundationYear,
         location: {
             type: 'Point',
             coordinates: [location.latitude, location.longitude]
@@ -127,7 +130,7 @@ exports.verifyBusiness = async (obj, admin) => {
 }
 
 exports.modifyBusiness = async (obj, user) => {
-    const {name, email, phoneNumber, address, location, businessId, category,twitterUrl,instagramUrl,facebookUrl} = obj;
+    const {name, email, phoneNumber, address, location, foundationYear, businessId, category,twitterUrl,instagramUrl,facebookUrl,description} = obj;
 
     if(!businessId) throw Error("businessId cannot be empty");
     if(!name) throw Error("Invalid business name");
@@ -147,6 +150,8 @@ exports.modifyBusiness = async (obj, user) => {
         twitterUrl,
         instagramUrl,
         facebookUrl,
+        description,
+        foundationYear,
         location: {
             type: 'Point',
             coordinates: [location.latitude, location.longitude]

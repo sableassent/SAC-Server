@@ -19,6 +19,10 @@ const BusinessSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        description: {
+            type: String,
+            required: true,
+        },
         email: {
             type: String,
             required: true,
@@ -39,7 +43,7 @@ const BusinessSchema = new mongoose.Schema(
         },
         verification: {
             type: String,
-            enum: ['PENDING', 'VERIFIED'],
+            enum: ['PENDING', 'VERIFIED', 'REJECTED'],
             required: true,
             default: "PENDING",
         },
