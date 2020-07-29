@@ -51,9 +51,13 @@ const UserSchema = new mongoose.Schema(
         },
         phoneNumberVerification: {
             type: VerificationSchema,
+            required: true,
+            default: () => ({})
         },
         emailVerification: {
             type: VerificationSchema,
+            required: true,
+            default: () => ({}),
         },
         profilePicture: {
             type: String,
