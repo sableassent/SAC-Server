@@ -10,18 +10,20 @@ const validVerificationStatus = ["PENDING", "VERIFIED", "REJECTED"];
  * Business service contains methods related to business creation, finding and other operations
  */
 
-exports.findForSearch = async (searchQuery, category) => {
+exports.findForSearch = async (searchQuery, category, limit, offset) => {
     let andQuery = [];
-    andQuery.push({name: {$regex: '.*' + searchQuery + '.*'}});
+    if(searchQuery) andQuery.push({name: {$regex: '.*' + searchQuery + '.*'}});
     andQuery.push({verification: 'VERIFIED'});
 
     if(category && !category.trim().length > 0) {
         andQuery.push({category: category.trim()});
     }
-    return Business.find({$and: andQuery}).limit(10) || null;
+    if(!offset) offset = 0;
+    if(!limit)  limit = 10;
+    return Business.find({$and: andQuery}).skip(offset).limit(limit) || null;
 }
 
-exports.findByLocation = async (location, maxDistance) => {
+exports.findByLocation = async (location, maxDistance, limit, offset) => {
     const {latitude, longitude} = location;
     let andQuery = [];
     andQuery.push({verification: 'VERIFIED'});
@@ -35,8 +37,10 @@ exports.findByLocation = async (location, maxDistance) => {
                 $maxDistance: maxDistance
             }
         }});
+    if(!offset) offset = 0;
+    if(!limit)  limit = 10;
     // maxDistance is in meters
-    return Business.find({$and: andQuery}).limit(100) || null;
+    return Business.find({$and: andQuery}).skip(offset).limit(limit) || null;
 }
 
 exports.findByUserId = async (userId) => {
@@ -94,19 +98,18 @@ exports.createBusiness = async (obj, user) => {
 }
 
 exports.findBusiness = async (obj, user) => {
-    const {searchQuery, category} = obj;
-    if(!searchQuery) throw Error("searchQuery cannot be empty");
-    return await module.exports.findForSearch(searchQuery, category);
+    const {searchQuery, category, offset, limit} = obj;
+    return await module.exports.findForSearch(searchQuery, category, limit, offset);
 }
 
 exports.findBusinessByLocation = async (obj, user) => {
     const {location} = obj;
-    let {maxDistance} = obj
+    let {maxDistance, offset, limit} = obj;
     if(!location) throw Error("No location specified");
     if(!location.latitude) throw Error("Location does not contain latitude")
     if(!location.longitude) throw Error("Location does not contain longitude")
     if(!maxDistance) maxDistance = 10 * 1000; // distance is in meters (so 10 km)
-    return module.exports.findByLocation(location, maxDistance);
+    return module.exports.findByLocation(location, maxDistance, limit, offset);
 }
 
 
