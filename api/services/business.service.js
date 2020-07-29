@@ -127,7 +127,7 @@ exports.verifyBusiness = async (obj, admin) => {
     const business = await Business.findById(businessId);
     if(!business) throw Error("Business not found");
 
-    business.verification = "VERIFIED";
+    business.verification = verificationStatus;
     return await business.save();
 
 }
