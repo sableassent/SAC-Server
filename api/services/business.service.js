@@ -143,7 +143,7 @@ exports.verifyBusiness = async (obj, admin) => {
     if(!business) throw Error("Business not found");
 
     business.verification = verificationStatus;
-    return await business.save();
+    return business.save();
 
 }
 

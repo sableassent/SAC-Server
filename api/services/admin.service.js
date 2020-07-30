@@ -85,17 +85,5 @@ exports.userLogout = async function (token) {
 };
 
 exports.getUser = async function (obj, admin) {
-    const {userId} = obj;
-    const user = await UserService.findById(userId);
-    return  {
-        _id: user._id,
-            name: user.name,
-        username: user.username,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        walletAddress: user.walletAddress,
-        referralCode: user.referralCode,
-        phoneNumberVerified: user.phoneNumberVerification.isVerified,
-        emailVerified: user.emailVerification.isVerified
-    }
+    return UserService.getUser({id: obj.userId}, admin);
 }

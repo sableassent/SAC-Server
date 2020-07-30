@@ -27,5 +27,6 @@ router.post('/getAllUsers', UserController.verifyToken, UserController.getAllUse
 router.post('/contactUs', UserController.verifyToken, UserController.contactUs);
 router.post('/uploadProfilePicture', UserController.verifyToken, Multer({storage: Multer.memoryStorage(), fileFilter: multerUtils.multerImageFilter}).single("file"), UserController.uploadProfilePicture);
 router.post('/getProfilePicture', UserController.verifyToken, UserController.getProfilePicture);
+router.get('/getUserById', UserController.verifyToken, UserController.getUserById);
 
 module.exports = router;

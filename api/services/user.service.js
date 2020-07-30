@@ -6,7 +6,7 @@ const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
 const emailUtils = require("../utils/emailUtils")
 const minioClient = require("../minio");
-
+const exportUtils = require("../utils/exportUtils")
 
 exports.findByReferralCode = async function (referralCode) {
     let user = await User.findOne({ referralCode: referralCode });
@@ -334,4 +334,11 @@ exports.getProfilePicture = async function (req, res, user) {
         }
         stream.pipe(res);
     });
+}
+
+exports.getUser = async function (obj, user) {
+    const {id} = obj;
+    if(!id) throw Error("Id cannot be empty");
+    const currentUser = await module.exports.findById(id);
+    return exportUtils.exportUser(currentUser);
 }

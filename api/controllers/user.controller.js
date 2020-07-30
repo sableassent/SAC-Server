@@ -207,3 +207,11 @@ exports.getProfilePicture = async function (req, res, next) {
         return res.status(500).send(e.message);
     }
 }
+
+exports.getUserById = async (req, res, next) => {
+    try{
+        return res.status(200).send(await UserService.getUser(req.query, req.user));
+    } catch (e) {
+        return res.status(500).send(e.message);
+    }
+}
