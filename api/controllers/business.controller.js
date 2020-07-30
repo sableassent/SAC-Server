@@ -12,7 +12,7 @@ exports.createBusiness = async function (req, res, next) {
 
 exports.findBusiness = async function (req, res, next) {
     try {
-        return res.status(200).send(await BusinessService.findBusiness(req.body, req.user));
+        return res.status(200).send(await BusinessService.findBusiness(req.query, req.user));
     } catch (e) {
         return res.status(500).send(e.message);
     }
@@ -22,7 +22,7 @@ exports.findBusiness = async function (req, res, next) {
 
 exports.nearMe = async function (req, res, next) {
     try {
-        return res.status(200).send(await BusinessService.findBusinessByLocation(req.body, req.user));
+        return res.status(200).send(await BusinessService.findBusinessByLocation(req.query, req.user));
     } catch (e) {
         return res.status(500).send(e.message);
     }
@@ -46,7 +46,7 @@ exports.modifyBusiness = async (req, res, next) => {
 
 exports.getBusinessByStatus = async (req, res, next) => {
     try{
-        return res.status(200).send(await BusinessService.getBusinessByStatus(req.body, req.user));
+        return res.status(200).send(await BusinessService.getBusinessByStatus(req.query, req.user));
     }catch (e) {
         res.status(500).send(e.message);
     }
@@ -62,7 +62,7 @@ exports.getCategories = async (req, res, next) => {
 
 exports.getMyBusiness = async (req, res, next) => {
     try{
-        return res.status(200).send(await BusinessService.getMyBusiness(req.body, req.user));
+        return res.status(200).send(await BusinessService.getMyBusiness(req.query, req.user));
     }catch (e) {
         res.status(500).send(e.message);
     }

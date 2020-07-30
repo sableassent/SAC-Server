@@ -10,14 +10,30 @@ const validVerificationStatus = ["PENDING", "VERIFIED", "REJECTED"];
  * Business service contains methods related to business creation, finding and other operations
  */
 
-exports.findForSearch = async (searchQuery, category, limit, offset) => {
+exports.findForSearch = async (searchQuery, category, location, maxDistance, limit, offset) => {
     let andQuery = [];
     if(searchQuery) andQuery.push({name: {$regex: '.*' + searchQuery + '.*'}});
-    andQuery.push({verification: 'VERIFIED'});
+
 
     if(category && !category.trim().length > 0) {
         andQuery.push({category: category.trim()});
     }
+
+    if(location && location.latitude && location.longitude){
+        const {latitude, longitude} = location;
+        if(!maxDistance) maxDistance = 10 * 1000; // in meters
+        andQuery.push({location: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [longitude, latitude]
+                    },
+                    $maxDistance: maxDistance
+                }
+            }})
+    }
+
+    andQuery.push({verification: 'VERIFIED'});
     if(!offset) offset = 0;
     if(!limit)  limit = 10;
     return Business.find({$and: andQuery}).skip(offset).limit(limit) || null;
@@ -32,7 +48,7 @@ exports.findByLocation = async (location, maxDistance, limit, offset) => {
             $near: {
                 $geometry: {
                     type: "Point",
-                    coordinates: [latitude, longitude]
+                    coordinates: [longitude, latitude]
                 },
                 $maxDistance: maxDistance
             }
@@ -98,18 +114,17 @@ exports.createBusiness = async (obj, user) => {
 }
 
 exports.findBusiness = async (obj, user) => {
-    const {searchQuery, category, offset, limit} = obj;
-    return await module.exports.findForSearch(searchQuery, category, limit, offset);
+    const {searchQuery, category, offset, limit, latitude, longitude} = obj;
+    return await module.exports.findForSearch(searchQuery, category,{latitude, longitude}, limit, offset);
 }
 
 exports.findBusinessByLocation = async (obj, user) => {
-    const {location} = obj;
-    let {maxDistance, offset, limit} = obj;
-    if(!location) throw Error("No location specified");
-    if(!location.latitude) throw Error("Location does not contain latitude")
-    if(!location.longitude) throw Error("Location does not contain longitude")
+    let {maxDistance, offset, limit, latitude, longitude} = obj;
+    // if(!location) throw Error("No location specified");
+    if(!latitude) throw Error("Location does not contain latitude")
+    if(!longitude) throw Error("Location does not contain longitude")
     if(!maxDistance) maxDistance = 10 * 1000; // distance is in meters (so 10 km)
-    return module.exports.findByLocation(location, maxDistance, limit, offset);
+    return module.exports.findByLocation({latitude, longitude}, maxDistance, limit, offset);
 }
 
 
@@ -170,6 +185,8 @@ exports.getBusinessByStatus = async (obj, admin) => {
         //invalid verification status
         throw Error("Invalid verification status");
     }
+    if(offset) offset = parseInt(offset);
+    if(limit)  limit = parseInt(limit);
 
     return module.exports.findByVerificationStatus(verificationStatus, offset, limit);
 }
