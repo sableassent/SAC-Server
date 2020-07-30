@@ -25,6 +25,11 @@ exports.findByUsername = async function (username) {
     return user || null;
 }
 
+exports.findById = async function (id) {
+    const user = await User.findById(id);
+    return user || null;
+}
+
 exports.findByEmail = async function (email) {
     let user = await User.findOne({ email: email });
     return user || null;

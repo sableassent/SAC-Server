@@ -2,6 +2,7 @@ const utils = require('../utils');
 const Admin = require("../models/admin.model")
 const passwordUtils = require("../utils/passwordUtils")
 const EthereumService = require("./ethereum.service");
+const UserService = require("./user.service")
 
 exports.findByEmail = async function (email) {
     let admin = await Admin.findOne({email: email });
@@ -70,15 +71,31 @@ exports.create = async function (obj) {
     return _id;
 }
 
-exports.changePassword = async function (obj, admin) {
-    if (!obj.newPassword) throw Error('New password is required.');
-    if (!obj.oldPassword) throw Error('Old password is required.');
-    if (obj.oldPassword === obj.newPassword) throw Error('Old password and new password should not be same.');
-    if (!module.exports.verifyPassword(admin, obj.oldPassword)) throw Error('Wrong old password, please try again.');
-    admin.password = module.exports.createPasswordHash(obj.newPassword);
-    await admin.save();
-}
+// exports.changePassword = async function (obj, admin) {
+//     if (!obj.newPassword) throw Error('New password is required.');
+//     if (!obj.oldPassword) throw Error('Old password is required.');
+//     if (obj.oldPassword === obj.newPassword) throw Error('Old password and new password should not be same.');
+//     if (!module.exports.verifyPassword(admin, obj.oldPassword)) throw Error('Wrong old password, please try again.');
+//     admin.password = module.exports.createPasswordHash(obj.newPassword);
+//     await admin.save();
+// }
 
 exports.userLogout = async function (token) {
-    await Admin.updateOne({ 'accessToken.token' : token },{ 'accessToken.isActive': false });
+    await Admin.update({ 'accessToken.token' : token },{ 'accessToken.isActive': false });
 };
+
+exports.getUser = async function (obj, admin) {
+    const {userId} = obj;
+    const user = await UserService.findById(userId);
+    return  {
+        _id: user._id,
+            name: user.name,
+        username: user.username,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        walletAddress: user.walletAddress,
+        referralCode: user.referralCode,
+        phoneNumberVerified: user.phoneNumberVerification.isVerified,
+        emailVerified: user.emailVerification.isVerified
+    }
+}
