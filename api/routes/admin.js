@@ -5,7 +5,7 @@ const AdminController = require('../controllers/admin.controller');
 
 
 //without auth
-router.post('/create', AdminController.create);
+router.post('/create', AdminController.verifyToken, AdminController.create);
 router.use('/login', AdminController.login);
 
 //with auth
