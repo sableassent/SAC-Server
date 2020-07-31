@@ -14,7 +14,7 @@ export const request = async (obj) => {
             }
         }
         const response = await axios.create({
-            baseURL: process.env.REACT_APP_BASE_URL,
+            baseURL:  "http://localhost:3000/",
             headers: headers
         })(obj);
         return response.data;

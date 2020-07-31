@@ -18,34 +18,43 @@ export default {
         text: '',
       },
     },
-    
-  /*   {
-      title: true,
-      name: 'Theme',
-      wrapper: {            // optional wrapper object
-        element: '',        // required valid HTML5 element tag
-        attributes: {}        // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
+    {
+      name: 'Business Directories',
+      url: '/businessdirectories',
+      icon: 'icon-grid',
+      badge: {
+        variant: 'info',
+        text: '',
       },
-      class: ''             // optional class names space delimited list for title item ex: "text-center"
     },
-    {
-      name: 'Colors',
-      url: '/theme/colors',
-      icon: 'icon-drop',
-    },
-    {
-      name: 'Typography',
-      url: '/theme/typography',
-      icon: 'icon-pencil',
-    },
-    {
-      title: true,
-      name: 'Components',
-      wrapper: {
-        element: '',
-        attributes: {},
+
+    /*   {
+        title: true,
+        name: 'Theme',
+        wrapper: {            // optional wrapper object
+          element: '',        // required valid HTML5 element tag
+          attributes: {}        // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
+        },
+        class: ''             // optional class names space delimited list for title item ex: "text-center"
       },
-    }, */
+      {
+        name: 'Colors',
+        url: '/theme/colors',
+        icon: 'icon-drop',
+      },
+      {
+        name: 'Typography',
+        url: '/theme/typography',
+        icon: 'icon-pencil',
+      },
+      {
+        title: true,
+        name: 'Components',
+        wrapper: {
+          element: '',
+          attributes: {},
+        },
+      }, */
     /* {
       name: 'Base',
       url: '/base',
@@ -58,38 +67,38 @@ export default {
         },
       ],
     }, */
-   /*  {
-      name: 'Buttons',
-      url: '/buttons',
-      icon: 'icon-cursor',
-      children: [
-        {
-          name: 'Buttons',
-          url: '/buttons/buttons',
-          icon: 'icon-cursor',
-        },
-        {
-          name: 'Button dropdowns',
-          url: '/buttons/button-dropdowns',
-          icon: 'icon-cursor',
-        },
-        {
-          name: 'Button groups',
-          url: '/buttons/button-groups',
-          icon: 'icon-cursor',
-        },
-        {
-          name: 'Brand Buttons',
-          url: '/buttons/brand-buttons',
-          icon: 'icon-cursor',
-        },
-      ],
-    },
-    {
-      name: 'Charts',
-      url: '/charts',
-      icon: 'icon-pie-chart',
-    }, */
+    /*  {
+       name: 'Buttons',
+       url: '/buttons',
+       icon: 'icon-cursor',
+       children: [
+         {
+           name: 'Buttons',
+           url: '/buttons/buttons',
+           icon: 'icon-cursor',
+         },
+         {
+           name: 'Button dropdowns',
+           url: '/buttons/button-dropdowns',
+           icon: 'icon-cursor',
+         },
+         {
+           name: 'Button groups',
+           url: '/buttons/button-groups',
+           icon: 'icon-cursor',
+         },
+         {
+           name: 'Brand Buttons',
+           url: '/buttons/brand-buttons',
+           icon: 'icon-cursor',
+         },
+       ],
+     },
+     {
+       name: 'Charts',
+       url: '/charts',
+       icon: 'icon-pie-chart',
+     }, */
     /* {
       name: 'Icons',
       url: '/icons',
@@ -156,13 +165,13 @@ export default {
         text: 'NEW',
       },
     }, */
-  /*   {
-      divider: true,
-    },
-    {
-      title: true,
-      name: 'Extras',
-    }, */
+    /*   {
+        divider: true,
+      },
+      {
+        title: true,
+        name: 'Extras',
+      }, */
     /* {
       name: 'Pages',
       url: '/pages',
@@ -190,26 +199,26 @@ export default {
         },
       ],
     }, */
-/*     {
-      name: 'Disabled',
-      url: '/dashboard',
-      icon: 'icon-ban',
-      attributes: { disabled: true },
-    },
-    {
-      name: 'Download CoreUI',
-      url: 'https://coreui.io/react/',
-      icon: 'icon-cloud-download',
-      class: 'mt-auto',
-      variant: 'success',
-      attributes: { target: '_blank', rel: "noopener" },
-    },
-    {
-      name: 'Try CoreUI PRO',
-      url: 'https://coreui.io/pro/react/',
-      icon: 'icon-layers',
-      variant: 'danger',
-      attributes: { target: '_blank', rel: "noopener" },
-    }, */
+    /*     {
+          name: 'Disabled',
+          url: '/dashboard',
+          icon: 'icon-ban',
+          attributes: { disabled: true },
+        },
+        {
+          name: 'Download CoreUI',
+          url: 'https://coreui.io/react/',
+          icon: 'icon-cloud-download',
+          class: 'mt-auto',
+          variant: 'success',
+          attributes: { target: '_blank', rel: "noopener" },
+        },
+        {
+          name: 'Try CoreUI PRO',
+          url: 'https://coreui.io/pro/react/',
+          icon: 'icon-layers',
+          variant: 'danger',
+          attributes: { target: '_blank', rel: "noopener" },
+        }, */
   ],
 };

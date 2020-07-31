@@ -28,13 +28,17 @@
     "flag-icon-css": "^3.4.6",
     "font-awesome": "^4.7.0",
     "formik": "^2.1.4",
-    "moment": "^2.26.0",
+    "google-map-react": "^2.0.2",
+    "google-maps-react": "^2.0.6",
+    "moment": "^2.27.0",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.6",
     "react-chartjs-2": "^2.9.0",
     "react-dom": "^16.13.1",
+    "react-icons": "^3.10.0",
+    "react-moment": "^0.9.7",
     "react-notification-system": "^0.4.0",
     "react-paginate": "^6.3.2",
     "react-router-config": "^5.1.1",
@@ -42,7 +46,8 @@
     "react-scripts": "^3.4.1",
     "react-test-renderer": "^16.13.1",
     "reactstrap": "^8.4.1",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "tarball": "0.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
