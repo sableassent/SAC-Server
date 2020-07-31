@@ -164,12 +164,12 @@ class BusinessDirectories extends Component {
                                                     <td>{business.name}</td>
                                                     <td>{business.email}</td>
                                                     <td>{business.phoneNumber}</td>
-                                                    <td>{business.address.houseNumber, business.address.streetName, business.address.city}</td>
+                                                    <td>{business.address.houseNumber} {business.address.streetName}, {business.address.city}</td>
                                                     <td>{business.category}</td>
                                                     <td>{business.description}</td>
                                                     <td>{business.foundationYear}</td>
-                                                    <td><Moment format="ddd, MMM DD, YYYY hh:mm A">{business.createdAt}</Moment></td>
-                                                    <td><Moment format="ddd, MMM DD, YYYY hh:mm A">{business.updatedAt}</Moment></td>
+                                                    <td><Moment format="ddd, MMM DD, YYYY">{business.createdAt}</Moment></td>
+                                                    <td><Moment format="ddd, MMM DD, YYYY">{business.updatedAt}</Moment></td>
                                                     <td ><Button className={business.verification === "PENDING" ? "btn-warning btn-sm" : business.verification === "VERIFIED" ? "btn-success btn-sm" : "btn-danger btn-sm"}>{business.verification}</Button></td>
                                                 </tr>
                                             )
