@@ -4,7 +4,7 @@ import BusinessService from '../../../services/BusinessService'
 import NotificationSystem from 'react-notification-system';
 import { NOTIFICATION_SYSTEM_STYLE } from '../../../NotificationSetting';
 import Moment from 'react-moment';
-import logo from '../../../assets/img/logo.jpeg';
+import user from '../../../assets/img/user.png';
 import logo3 from '../../../assets/img/logo3.jpeg';
 import { UncontrolledCarousel } from 'reactstrap';
 // import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
@@ -210,7 +210,7 @@ class BusinessDirectories extends Component {
                     <ModalBody>
                         <Row>
                             <Col sm={5}>
-                                <img width="250px" height="150px" src={logo} />
+                                <img width="250px" height="150px" src={user} />
                             </Col>
                             <Col sm={7}>
                                 <Table >
