@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 const validators = require("../mongoValidators");
 const TransactionSchema = new mongoose.Schema(
     {
-        _id: {
-            type: String,
-            required: true,
-        },
         from: {
             type: String,
             required: true

@@ -4,11 +4,6 @@ const VerificationSchema = require("./verification.model");
 
 const UserSchema = new mongoose.Schema(
     {
-        _id: {
-            type: String,
-            required: true,
-            primaryKey: true
-        },
         name: {
             type: String,
             required: true

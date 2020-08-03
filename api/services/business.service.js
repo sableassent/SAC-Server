@@ -89,9 +89,8 @@ exports.createBusiness = async (obj, user) => {
     if(!location.longitude) throw Error("Location does not contain longitude")
     if(!category) throw Error("Category cannot be empty");
     if(!foundationYear) throw Error("Foundation Year is required");
-    const _id = utils.getUid(92, "alphaNumeric");
     let business = new Business({
-        _id,
+        // _id,
         name,
         userId: user._id,
         email,

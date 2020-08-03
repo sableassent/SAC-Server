@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 const validators = require("../mongoValidators");
 const AdminSchema = new mongoose.Schema(
     {
-        _id: {
-            type: String,
-            required: true
-        },
         name: {
             type: String,
             required: true

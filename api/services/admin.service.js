@@ -55,7 +55,7 @@ exports.create = async function (obj) {
     let _id = utils.getUid(92, 'alphaNumeric');
     let passwordHash = passwordUtils.createPasswordHash(obj.password);
     const admin = new Admin({
-        _id: _id,
+        // _id: _id,
         name: obj.name,
         email: obj.email,
         password: passwordHash

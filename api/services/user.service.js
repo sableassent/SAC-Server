@@ -64,13 +64,13 @@ exports.userCreate = async function (obj) {
     if (!obj.password) throw Error("Password is required.");
     if (!(await utils.isEmail(obj.email)))
         throw Error("Provide valid email address.");
-    let _id = utils.getUid(92, "alphaNumeric");
+    // let _id = utils.getUid(92, "alphaNumeric");
     let passwordHash = passwordUtils.createPasswordHash(obj.password);
     let referralCode = obj.name.substring(0, 4);
     referralCode += utils.getUid(4, "alphaNumeric");
 
-    const user = new User({
-        _id: _id,
+    let user = new User({
+        // _id: _id,
         name: obj.name,
         username: obj.username,
         email: obj.email,
@@ -79,9 +79,9 @@ exports.userCreate = async function (obj) {
         referralCode: referralCode,
         phoneNumberVerified: false,
     })
-    await user.save();
+    user = await user.save();
 
-    return _id;
+    return user._id;
 };
 
 exports.userChangePasswordFn = async function (newPassword, user) {
@@ -127,14 +127,14 @@ exports.addReferral = async function (obj) {
     const toUserVerified   = touser.phoneNumberVerification.isVerified;
 
     try {
-        let _id = utils.getUid(92, "alphaNumeric");
+        // let _id = utils.getUid(92, "alphaNumeric");
         let status = "Both Verification Pending!";
         let completedAt;
         if (fromUserVerified && toUserVerified) {
             status = "Verification Done.";
             completedAt = new Date();
             let referral = new Referral({
-                _id: _id,
+                // _id: _id,
                 from: fromuser._id,
                 to: touser._id,
                 referralCode: obj.referralCode,
@@ -155,7 +155,7 @@ exports.addReferral = async function (obj) {
         }
 
         let referral = new Referral({
-            _id: _id,
+            // _id: _id,
             from: fromuser._id,
             to: touser._id,
             referralCode: obj.referralCode,

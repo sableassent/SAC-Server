@@ -5,16 +5,12 @@ const validators = require("../mongoValidators");
 const businessCategories = require("./businessCategory.model");
 const VerificationSchema = require("./verification.model");
 const PlacesSchema = require("./places.model");
+const Schema = mongoose.Schema;
 
 const BusinessSchema = new mongoose.Schema(
     {
-        _id: {
-            type: String,
-            required: true
-        },
-        userId: {
-            type: String,
-            required: true
+        user: {
+            type: Schema.ObjectId, ref: 'Users'
         },
         name: {
             type: String,
