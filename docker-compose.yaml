@@ -55,6 +55,8 @@ services:
       - TWILIO_AUTHTOKEN=${TWILIO_AUTHTOKEN}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - SUPPORT_SG_MAIL=${SUPPORT_SG_MAIL}
     command: sh -c "node app.js"
     restart: always
     ports:
