@@ -4,6 +4,7 @@ const addressSchema = require("./address.model");
 const validators = require("../mongoValidators");
 const businessCategories = require("./businessCategory.model");
 const VerificationSchema = require("./verification.model");
+const PlacesSchema = require("./places.model");
 
 const BusinessSchema = new mongoose.Schema(
     {
@@ -36,6 +37,9 @@ const BusinessSchema = new mongoose.Schema(
         address: {
             type: addressSchema,
             required: true,
+        },
+        placesModel: {
+            type: PlacesSchema,
         },
         location: {
             type: locationPoint,
