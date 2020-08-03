@@ -10,7 +10,10 @@ const validVerificationStatus = ["PENDING", "VERIFIED", "REJECTED"];
  * Business service contains methods related to business creation, finding and other operations
  */
 
-exports.findForSearch = async (searchQuery, category, location, maxDistance, limit, offset) => {
+exports.findForSearch = async (searchQuery, category, location, maxDistance, limit, offset, sortField, sortDirection) => {
+    if(sortDirection && ["-1","1"].indexOf(sortDirection) === -1){
+        throw Error("Invalid sort direction");
+    }
     let andQuery = [];
     if(searchQuery) andQuery.push({name: {$regex: '.*' + searchQuery + '.*'}});
 
@@ -32,11 +35,15 @@ exports.findForSearch = async (searchQuery, category, location, maxDistance, lim
                 }
             }})
     }
+    let sortQuery = {};
+    if(sortField !== null && sortDirection !== null){
+        sortQuery = {[sortField]: sortDirection};
+    }
 
     andQuery.push({verification: 'VERIFIED'});
     if(!offset) offset = 0;
     if(!limit)  limit = 10;
-    return Business.find({$and: andQuery}).skip(offset).limit(limit) || null;
+    return Business.find({$and: andQuery}).sort(sortQuery).skip(offset).limit(limit) || null;
 }
 
 exports.findByLocation = async (location, maxDistance, limit, offset) => {
@@ -69,10 +76,12 @@ exports.findByVerificationStatus = async (verification, offset, limit) => {
     //     throw Error("Invalid status");
     if(!offset) offset = 0;
     if(!limit)  limit = 10;
-    if(!verification){
-        return await Business.find({}).sort({ createdAt: -1 }).skip(offset).limit(limit) || null;
+    let query = {};
+
+    if(verification){
+        query = {verification};
     }
-    return await Business.find({verification}).sort({ createdAt: -1 }).skip(offset).limit(limit) || null;
+    return Business.find(query).sort({ createdAt: -1 }).skip(offset).limit(limit).populate('userId') || null;
 }
 
 // exports.getByStatus = async (status) => {
@@ -113,8 +122,8 @@ exports.createBusiness = async (obj, user) => {
 }
 
 exports.findBusiness = async (obj, user) => {
-    const {searchQuery, category, offset, limit, latitude, longitude} = obj;
-    return await module.exports.findForSearch(searchQuery, category,{latitude, longitude}, limit, offset);
+    const {searchQuery, category, offset, limit, latitude, longitude, sortField, sortDirection} = obj;
+    return await module.exports.findForSearch(searchQuery, category,{latitude, longitude}, limit, offset, sortField, sortDirection);
 }
 
 exports.findBusinessByLocation = async (obj, user) => {

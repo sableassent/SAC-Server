@@ -41,10 +41,6 @@ services:
       - mongo
       - minio
     environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_DATABASE=sablecoin
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=itsecure
       - MONGO_USERNAME=${MONGO_USERNAME}
       - MONGO_PASSWORD=${MONGO_PASSWORD}
       - MONGO_HOST=${MONGO_HOST}

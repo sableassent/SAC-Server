@@ -5,12 +5,12 @@ const AdminController = require('../controllers/admin.controller');
 
 
 //without auth
-router.post('/create', AdminController.verifyToken, AdminController.create);
 router.use('/login', AdminController.login);
 router.get('/me', AdminController.verifyToken, AdminController.me);
 
 
 //with auth
+router.post('/create', AdminController.verifyToken, AdminController.create);
 // router.post('/resetPassword', AdminController.verifyToken, AdminController.resetPassword);
 router.post('/changePassword', AdminController.verifyToken, AdminController.changePassword);
 router.post('/logout', AdminController.verifyToken, AdminController.logout);

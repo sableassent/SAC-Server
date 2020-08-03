@@ -42,7 +42,9 @@ async function _startServer() {
     app.use('/', routes);
     // await sequelize.authenticate();
     // await sequelize.sync();
-    await mongo.start();
+    await mongo.start().then(()=>{
+        console.log("Connected to mongodb");
+    });
     // create buckets if not exists
     createBuckets();
 

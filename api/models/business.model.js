@@ -10,7 +10,8 @@ const Schema = mongoose.Schema;
 const BusinessSchema = new mongoose.Schema(
     {
         userId: {
-            type: Schema.ObjectId, ref: 'Users'
+            type: Schema.Types.ObjectId,
+            ref: 'Users'
         },
         name: {
             type: String,

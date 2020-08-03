@@ -7,6 +7,7 @@ const mongoURL = `mongodb://${MONGO_HOST}/${MONGO_DATABASE}`
 
 exports.start = async () => {
     await mongoose.connect(mongoURL, {useNewUrlParser: true}, (error) => {
+        if(error)
         console.error("Error has occurred connecting to  mongodb", error);
     })
 }
