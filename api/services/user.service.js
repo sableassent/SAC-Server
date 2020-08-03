@@ -8,6 +8,8 @@ const emailUtils = require("../utils/emailUtils")
 const minioClient = require("../minio");
 const exportUtils = require("../utils/exportUtils")
 
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
+
 exports.findByReferralCode = async function (referralCode) {
     let user = await User.findOne({ referralCode: referralCode });
     return user || null;
@@ -233,7 +235,7 @@ exports.sendOTP = async function (obj, user) {
     client.messages
         .create({
             body: "Your OTP is " + otp,
-            from: "+13343263230",
+            from: TWILIO_PHONE_NUMBER,
             to: user.phoneNumber,
         })
         .then(async () => {
