@@ -304,7 +304,7 @@ exports.contactUs = async function (obj, user) {
             throw Error(error);
         }
 
-        console.log(`Mail Response: ${body}`);
+        console.log(`Mail Response:`, body);
     })
 
     return returnMessage;

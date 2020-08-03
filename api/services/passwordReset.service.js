@@ -99,7 +99,7 @@ exports.userResetPassword = async function (obj) {
     emailUtils.sendPasswordResetMailSG(user, email, otp, function (error, response, body) {
         if (error) console.log("Error sending email: ${error}")
 
-        console.log(`Mail Response: ${body}`);
+        console.log(`Mail Response:`, body);
     })
 
     return returnMessage;
