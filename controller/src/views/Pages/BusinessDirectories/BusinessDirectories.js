@@ -10,10 +10,7 @@ import { UncontrolledCarousel } from 'reactstrap';
 // import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import { TiSocialFacebook, TiSocialLinkedin, TiSocialTwitter, TiSocialInstagram } from "react-icons/ti";
 
-const mapStyles = {
-    width: '50%',
-    height: '50%'
-};
+
 
 class BusinessDirectories extends Component {
     constructor(props) {
@@ -25,16 +22,18 @@ class BusinessDirectories extends Component {
             business: {},
             page: 1,
             pages: [],
-            limit: 2,
+            limit: 20,
             totalBusinesses: 0,
             totalPages: 1,
             nextPage: 1,
             previousPage: 0,
             color: '',
             details: [],
-            user: {}
+            user: {},
+            coordinates: []
 
         }
+        this.toggle = this.toggle.bind(this);
     }
     componentDidMount() {
         this.getBusinessByStatus()
@@ -48,12 +47,10 @@ class BusinessDirectories extends Component {
             }
             let response = await BusinessService.getByStatus(obj);
             this.setState({ businesses: response, details: response });
-            console.log('bussiness', this.state.businesses)
             if (response) {
                 this.setState({
                     totalBusinesses: response.length,
-                    totalPages: 3
-                    // totalPages: Math.ceil(response.length / this.state.limit)
+                    totalPages: Math.ceil(response.length / this.state.limit)
                 }, () => {
                     let pages = this.state.pages;
                     for (let page = 1; page <= this.state.totalPages; page++) {
@@ -83,18 +80,19 @@ class BusinessDirectories extends Component {
         }
 
     }
-    refreshPagination = async (page, limit = 2) => {
-        this.setState({ page: page, nextPage: page + 1, previousPage: page - 1, limit: parseInt(limit) }, () => {
+    refreshPagination = async (page) => {
+        this.setState({ page: page, nextPage: page + 1, previousPage: page - 1 }, () => {
             this.getBusinessByStatus();
         });
     }
-    toggle = () => {
+    toggle() {
         this.setState({ openModal: !this.state.openModal })
     }
     openBusinessModal = (business) => {
         this.setState({
             openModal: true,
-            business: business
+            business: business,
+            coordinates: business.location.coordinates
         })
         this.getUser(business.userId);
     }
@@ -106,33 +104,29 @@ class BusinessDirectories extends Component {
 
         }
     }
+
     render() {
         const Style = {
             position: 'relative',
             width: '50%',
             height: '30%'
         }
+        let images = []
+        this.state.business.images && this.state.business.images.map((image, index) => {
+            return (
+                images.push({
+                    src: `http://localhost:3000/files/${image.imageId}`,
+                    key: index + 1,
+                    caption: image.imageId
+                }))
+        })
+
         const items = [
             {
                 src: logo3,
-                altText: 'Slide 1',
-                caption: 'Bussiness',
-                header: 'Slide 1 Header',
-                key: '1'
-            },
-            {
-                src: logo3,
-                altText: 'Slide 2',
-                caption: 'Slide 2',
-                header: 'Slide 2 Header',
-                key: '2'
-            },
-            {
-                src: logo3,
-                altText: 'Slide 3',
-                caption: 'Slide 3',
-                header: 'Slide 3 Header',
-                key: '3'
+                key: '1',
+                caption: 'logo',
+
             }
         ]
 
@@ -195,18 +189,18 @@ class BusinessDirectories extends Component {
                                     </PaginationLink>
                                 </PaginationItem>
                             ))}
-                            <PaginationItem disabled={this.state.totalPages > this.state.nextPage}>
+                            <PaginationItem disabled={this.state.totalPages >= this.state.nextPage}>
                                 <PaginationLink next onClick={() => this.refreshPagination(this.state.nextPage)} />
                             </PaginationItem>
                             <PaginationItem>
-                                <PaginationLink last href="#" />
+                                <PaginationLink disabled href="#" />
                             </PaginationItem>
                         </Pagination>
                     </CardFooter>
                 </Card>
                 <Modal className="modal-dialog modal-lg" isOpen={this.state.openModal} toggle={this.toggle}>
                     {/* <ModalHeader toggle={this.toggle}>User Information</ModalHeader> */}
-                    <h4 style={{ marginTop: '20px', marginLeft: '20px' }}><strong>User Information :</strong></h4>
+                    <h3 className="text-muted" style={{ marginTop: '20px', marginLeft: '20px' }}><strong>User Information :</strong></h3>
                     <ModalBody>
                         <Row>
                             <Col sm={5}>
@@ -267,41 +261,52 @@ class BusinessDirectories extends Component {
                                 </Table>
                             </Col>
                             <Col sm={6}>
-                                <UncontrolledCarousel style={{ width: '250px', height: '150' }} items={items} />
-                                {/* //<img width="250px" height="150px" src={logo} /> */}
+                                <UncontrolledCarousel style={{ width: '250px', height: '150' }} items={images.length ? images : items} />
                             </Col>
                         </Row>
                         <h4> <strong>Social Media links:</strong></h4>
                         <div style={{ display: 'flex' }}>
                             <Button className="btn btn-primary"><TiSocialTwitter size="40px"></TiSocialTwitter></Button > <Button className="btn btn-primary" style={{ marginLeft: '10px' }}> <TiSocialLinkedin size="40px"></TiSocialLinkedin></Button> <Button className="btn btn-primary" style={{ marginLeft: '10px' }}> <TiSocialFacebook size="40px"></TiSocialFacebook></Button ><Button className="btn btn-primary" style={{ marginLeft: '10px' }}><TiSocialInstagram size="40px"></TiSocialInstagram></Button>
                         </div>
-                        {/* <h4> <strong>Contact:</strong></h4>
+                        <h4> <strong>Contact:</strong></h4>
                         <div >
-                            <Map style={Style} google={this.props.google} zoom={14}>
+                            {/* <Map google={this.props.google}
+                                initialCenter={{
+                                    lat: 40.854885,
+                                    lng: -88.081807
+                                }}
+                                zoom={15}
+                                onClick={this.onMapClicked}
+                            >
 
-                                <Marker onClick={this.onMarkerClick}
-                                    name={this.state.business.address && Object.values(this.state.business.address).join()} />
-
+                                <Marker
+                                    title={'The marker`s title will appear as a tooltip.'}
+                                    name={'SOMA'}
+                                    position={{ lat: 37.778519, lng: -122.405640 }} />
+                                <Marker
+                                    name={'Dolores park'}
+                                    position={{ lat: this.state.coordinates ? this.state.coordinates[0] : 0, lng: this.state.coordinates ? this.state.coordinates[1] : 0 }} />
+                                <Marker />
                                 <InfoWindow onClose={this.onInfoWindowClose}>
                                     <div>
                                         <h1>{this.state.business.address && Object.values(this.state.business.address).join()}</h1>
                                     </div>
                                 </InfoWindow>
-                            </Map>
-                        </div> */}
+                            </Map> */}
+                        </div>
                     </ModalBody>
                     <ModalFooter>
                         {
                             this.state.business.verification === "PENDING" ?
                                 <div>
-                                    <Button color="success" onClick={() => this.verifyBusiness('VERIFIED', this.state.business._id)}>Verify</Button>
-                                    <Button style={{ marginLeft: '10px' }} color="danger" onClick={() => this.verifyBusiness('REJECTED', this.state.business._id)}>Reject</Button>
+                                    <Button color="success" onClick={() => { this.verifyBusiness('VERIFIED', this.state.business._id); this.toggle() }}>Verify</Button>
+                                    <Button style={{ marginLeft: '10px' }} color="danger" onClick={() => { this.verifyBusiness('REJECTED', this.state.business._id); this.toggle() }}>Reject</Button>
                                 </div>
                                 :
                                 this.state.business.verification === "VERIFIED" ?
-                                    <Button color="danger" onClick={() => this.verifyBusiness('REJECTED', this.state.business._id)}>Reject</Button>
+                                    <Button color="danger" onClick={() => { this.verifyBusiness('REJECTED', this.state.business._id); this.toggle() }}>Reject</Button>
                                     :
-                                    <Button color="success" onClick={() => this.verifyBusiness('VERIFIED', this.state.business._id)}>Verify</Button>
+                                    <Button color="success" onClick={() => { this.verifyBusiness('VERIFIED', this.state.business._id); this.toggle() }}>Verify</Button>
                         }
                         <Button style={{ marginLeft: '10px' }} onClick={this.toggle}>Cancel</Button>
                     </ModalFooter>
@@ -319,6 +324,4 @@ class BusinessDirectories extends Component {
 }
 
 export default BusinessDirectories
-// GoogleApiWrapper({
-//     apiKey: ("AIzaSyCJ8mASDSrqNJ4DZYY4FFjPiQbD02ncYRU")
-// })()
+// GoogleApiWrapper({ apiKey: ("AIzaSyCJ8mASDSrqNJ4DZYY4FFjPiQbD02ncYRU") })()
