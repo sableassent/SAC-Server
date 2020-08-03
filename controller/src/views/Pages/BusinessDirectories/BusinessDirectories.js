@@ -192,8 +192,8 @@ class BusinessDirectories extends Component {
                             <PaginationItem disabled={this.state.totalPages >= this.state.nextPage}>
                                 <PaginationLink next onClick={() => this.refreshPagination(this.state.nextPage)} />
                             </PaginationItem>
-                            <PaginationItem>
-                                <PaginationLink disabled href="#" />
+                            <PaginationItem  disabled>
+                                <PaginationLink last href="#" />
                             </PaginationItem>
                         </Pagination>
                     </CardFooter>
