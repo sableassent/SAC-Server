@@ -1,14 +1,13 @@
-let Minio = require('minio')
-
-const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY;
-const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY;
+const Env = require("./env");
+const Minio = require("minio");
 
 let minioClient = new Minio.Client({
-    endPoint: 'minio',
-    port: 9000,
-    useSSL: false,
-    accessKey: MINIO_ACCESS_KEY,
-    secretKey: MINIO_SECRET_KEY
+  endPoint: Env.MINIO_ENDPOINT,
+  port: Env.MINIO_PORT,
+  useSSL: Env.MINIO_USE_SSL,
+  accessKey: Env.MINIO_ACCESS_KEY,
+  secretKey: Env.MINIO_SECRET_KEY,
+  region: Env.MINIO_REGION,
 });
 
 module.exports = minioClient;
