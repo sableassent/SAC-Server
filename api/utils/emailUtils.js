@@ -1,6 +1,8 @@
+const Env = require("../env");
+
 const request = require("request");
 
-const SG_API_KEY = process.env.SENDGRID_API_KEY;
+const SG_API_KEY = Env.SENDGRID_API_KEY;
 const SUPPORT_SG_MAIL = "support@sableassent.net";
 const sendgridUrl = 'https://api.sendgrid.com/v3/mail/send';
 

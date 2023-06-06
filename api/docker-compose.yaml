@@ -1,0 +1,41 @@
+version: "3.1"
+
+# You may start all the services here with: `docker compose up`
+# Or a specific service with `docker compose up <service-key>`. Example: `docker compose up minio`
+services:
+  # Mongo is only used for local development. In production, MongoDB Atlas should be used
+  #   image: mongo
+  #   container_name: sac-api-v1-mongo
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: "${MONGO_INITDB_ROOT_USERNAME:-root}"
+  #     MONGO_INITDB_ROOT_PASSWORD: "${MONGO_INITDB_ROOT_PASSWORD:-example}"
+  #   ports:
+  #     - "${MONGO_PORT:-27017}:27017"
+  #   networks:
+  #     - sac-api-v1-network
+  #
+
+  # Minio is only used for local development and testing. In production, an AWS S3 bucket should be used instead.
+  # You may also refer to [Minio's Javascript Docs](https://min.io/docs/minio/linux/developers/javascript/minio-javascript.html)
+  # on how to use a public remote instance for testing
+  minio:
+    image: "bitnami/minio:latest"
+    container_name: sac-api-v1-minio
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minio-root-user}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minio-root-password}"
+    ports:
+      - "${MINIO_PORT_0:-9000}:9000"
+      - "${MINIO_PORT_1:-9001}:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - sac-api-v1-network
+
+volumes:
+  minio-data:
+    driver: local
+
+networks:
+  sac-api-v1-network:
+    driver: bridge
