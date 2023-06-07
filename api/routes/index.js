@@ -9,7 +9,6 @@ const business = require('./business');
 const filesUpload = require('./fileUpload');
 
 router.use('/time', async (req, res) => res.status(200).send(new Date().toISOString()));
-router.get('/', async (req, res) => res.status(200).send(`API Server is up and running... Current DateTime: ${new Date().toISOString()}`));
 router.use(admin);
 router.use(ethereum);
 router.use(user);

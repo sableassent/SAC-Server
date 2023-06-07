@@ -49,7 +49,7 @@ services:
       - CHAIN=${CHAIN}
       - HARDFORK=${HARDFORK}
       - SAC1_ADDRESS=${SAC1_ADDRESS}
-      - INFURA_API_ENDPOINT=${INFURA_API_ENDPOINT}
+      - ALCHEMY_API_ENDPOINT=${ALCHEMY_API_ENDPOINT}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - TWILIO_ACCOUNTSID=${TWILIO_ACCOUNTSID}
       - TWILIO_AUTHTOKEN=${TWILIO_AUTHTOKEN}
@@ -70,8 +70,8 @@ services:
       args:
         - REACT_APP_BASE_URL=${REACT_APP_BASE_URL}
     container_name: controller
-    depends_on:
-      - api
+    # depends_on:
+    #   - api
     command: nginx
     restart: always
     ports:
