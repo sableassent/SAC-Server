@@ -1,12 +1,13 @@
 const utils = require("../utils");
 const User = require("../models/user.model");
 const Referral = require("../models/referral.model");
-const client = require("twilio")(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
+const TwilioClient = require('twilio');
 const otpExpiryTimeMinutes = 15;
 const passwordUtils = require("../utils/passwordUtils")
 const emailUtils = require("../utils/emailUtils")
 const minioClient = require("../minio");
-const exportUtils = require("../utils/exportUtils")
+const exportUtils = require("../utils/exportUtils");
+
 
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
@@ -232,6 +233,8 @@ exports.userLogout = async function (token) {
 
 exports.sendOTP = async function (obj, user) {
     let otp = utils.getUid(4, "numeric");
+    const client = TwilioClient(process.env.TWILIO_ACCOUNTSID, process.env.TWILIO_AUTHTOKEN);
+
     client.messages
         .create({
             body: "Your OTP is " + otp,

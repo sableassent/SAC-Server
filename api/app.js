@@ -44,11 +44,11 @@ async function _startServer() {
     // await sequelize.sync();
     await mongo.start();
     // create buckets if not exists
-    createBuckets();
+    // createBuckets();
 
-    EthereumService.updateBalance();
-    EthereumService.updateTransactionStatus();
-    return http.createServer(app).listen(80, "0.0.0.0", function () {
+    // EthereumService.updateBalance();
+    // EthereumService.updateTransactionStatus();
+    return http.createServer(app).listen(8080, "0.0.0.0", function () {
         console.log('Express server started');
     });
 }
